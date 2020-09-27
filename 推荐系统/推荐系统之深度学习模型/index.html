@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推荐算法,CTR算法," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、Wide&amp;amp;Deep模型Wide &amp;amp; Deep于2016年google在发表在DLRS 2016上的论文《Wide &amp;amp; Deep Learning for Recommender Systems》提出。Wide&amp;amp;Deep的核心思想是结合线性模型的记忆能力和DNN泛化能力，进而提升模型的整体性能。 1.1 背景推荐系统的主要挑战之一，是同时解决Memorizatio">
+<meta name="keywords" content="推荐算法,CTR算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统之深度学习模型">
+<meta property="og:url" content="http://www.mayexia.com/推荐系统/推荐系统之深度学习模型/index.html">
+<meta property="og:site_name" content="梵  高  先  生">
+<meta property="og:description" content="1、Wide&amp;amp;Deep模型Wide &amp;amp; Deep于2016年google在发表在DLRS 2016上的论文《Wide &amp;amp; Deep Learning for Recommender Systems》提出。Wide&amp;amp;Deep的核心思想是结合线性模型的记忆能力和DNN泛化能力，进而提升模型的整体性能。 1.1 背景推荐系统的主要挑战之一，是同时解决Memorizatio">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.mayexia.com/imgs/推荐系统之深度学习模型/01.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/推荐系统之深度学习模型/02.png">
+<meta property="og:updated_time" content="2020-09-27T06:53:05.346Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="推荐系统之深度学习模型">
+<meta name="twitter:description" content="1、Wide&amp;amp;Deep模型Wide &amp;amp; Deep于2016年google在发表在DLRS 2016上的论文《Wide &amp;amp; Deep Learning for Recommender Systems》提出。Wide&amp;amp;Deep的核心思想是结合线性模型的记忆能力和DNN泛化能力，进而提升模型的整体性能。 1.1 背景推荐系统的主要挑战之一，是同时解决Memorizatio">
+<meta name="twitter:image" content="http://www.mayexia.com/imgs/推荐系统之深度学习模型/01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mayexia.com/推荐系统/推荐系统之深度学习模型/"/>
+
+
+
+
+
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+  <title>推荐系统之深度学习模型 | 梵  高  先  生</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梵  高  先  生</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.mayexia.com/推荐系统/推荐系统之深度学习模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="马野">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梵  高  先  生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">推荐系统之深度学习模型</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-14T17:04:06+08:00">
+                2020-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/推荐系统/推荐系统之深度学习模型/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/推荐系统/推荐系统之深度学习模型/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1、Wide-amp-Deep模型"><a href="#1、Wide-amp-Deep模型" class="headerlink" title="1、Wide&amp;Deep模型"></a>1、Wide&amp;Deep模型</h1><p>Wide &amp; Deep于2016年google在发表在DLRS 2016上的论文<a href="https://arxiv.org/pdf/1606.07792.pdf" target="_blank" rel="noopener">《Wide &amp; Deep Learning for Recommender Systems》</a>提出。Wide&amp;Deep的核心思想是结合线性模型的记忆能力和DNN泛化能力，进而提升模型的整体性能。</p>
+<h2 id="1-1-背景"><a href="#1-1-背景" class="headerlink" title="1.1 背景"></a>1.1 背景</h2><p>推荐系统的主要挑战之一，是同时解决Memorization和Generalization，理解这两个概念是理解全文思路的关键，下面分别进行解释。</p>
+<ul>
+<li><p><strong>Memorization</strong>:面对拥有大规模离散sparse特征的CTR预估问题时，将特征进行非线性转换，然后再使用线性模型是在业界非常普遍的做法，最流行的即「LR+特征叉乘」。Memorization 通过一系列人工的特征叉乘（cross-product）来构造这些非线性特征，捕捉sparse特征之间的高阶相关性，即“记忆” 历史数据中曾共同出现过的特征对。</p>
+<blockquote>
+<p>典型代表是LR模型，使用大量的原始sparse特征和叉乘特征作为输入，很多原始的dense特征通常也会被分桶离散化构造为sparse特征。这种做法的优点是模型可解释高，实现快速高效，特征重要度易于分析，在工业界已被证明是很有效的。Memorization的缺点是：</p>
+<ul>
+<li>需要更多的人工设计；</li>
+<li>可能出现过拟合。可以这样理解：如果将所有特征叉乘起来，那么几乎相当于纯粹记住每个训练样本，这个极端情况是最细粒度的叉乘，我们可以通过构造更粗粒度的特征叉乘来增强泛化性；</li>
+<li>无法捕捉训练数据中未曾出现过的特征对。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Generalization:Generalization 为sparse特征学习低维的dense embeddings 来捕获特征相关性，学习到的embeddings 本身带有一定的语义信息。可以联想到NLP中的词向量，不同词的词向量有相关性，因此文中也称Generalization是基于相关性之间的传递。这类模型的代表是DNN和FM。</p>
+<blockquote>
+<ul>
+<li>优点:更少的人工参与，对历史上没有出现的特征组合有更好的泛化性 。</li>
+<li>缺点:但在推荐系统中，当user-item matrix非常稀疏时，例如有和独特爱好的users以及很小众的items，NN很难为users和items学习到有效的embedding。这种情况下，大部分user-item应该是没有关联的，但dense embedding 的方法还是可以得到对所有 user-item pair 的非零预测，因此导致 over-generalize并推荐不怎么相关的物品。此时Memorization就展示了优势，它可以“记住”这些特殊的特征组合。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>Memorization根据历史行为数据，产生的推荐通常和用户已有行为的物品直接相关的物品。而Generalization会学习新的特征组合，提高推荐物品的多样性。 论文作者结合两者的优点，提出了一个新的学习算法——Wide &amp; Deep Learning，其中Wide &amp; Deep分别对应Memorization &amp; Generalization。</p>
+<h2 id="1-2-模型结构"><a href="#1-2-模型结构" class="headerlink" title="1.2 模型结构"></a>1.2 模型结构</h2><p>Wide &amp; Deep模型结合了LR和DNN，其框架图如下所示。<br><img src="/imgs/推荐系统之深度学习模型/01.png" alt="01.png"><br><strong>Wide</strong> 该部分是广义线性模型，即$y=W^{T}[x,\phi(x)]+b$,其中$x$和$\phi(x)$表示原始特征与叉乘特征。<br><strong>Deep</strong> 该部分是前馈神经网络，网络会对一些sparse特征（如ID类特征）学习一个低维的dense embeddings（维度量级通常在O(10)到O(100)之间），然后和一些原始dense特征一起作为网络的输入。每一层隐层计算：<br>$a^{l+1}=f(W^{l}a^{l}+b^{l})$,其中$a^{l},b^{l},W^{l}$是第$l$层的激活值、偏置和权重，$f$是激活函数。<br><strong>损失函数</strong> 模型选取logistic loss作为损失函数，此时Wide &amp; Deep最后的预测输出为：<br>$$p(y=1|x)=\sigma(W^{T}_{wide}[x,\phi(x)]+W^{T}_{deep}a^{l_{f}}+b)$$</p>
+<p>其中$\sigma$表示sigmoid函数，$\phi(x)$表示叉乘特征，$a^{l_{f}}$表示NN最后一层激活值。</p>
+<h2 id="1-3-联合训练"><a href="#1-3-联合训练" class="headerlink" title="1.3 联合训练"></a>1.3 联合训练</h2><p>联合训练（Joint Training）和集成（Ensemble）是不同的，集成是每个模型单独训练，再将模型的结果汇合。相比联合训练，集成的每个独立模型都得学得足够好才有利于随后的汇合，因此每个模型的model size也相对更大。而联合训练的wide部分只需要作一小部分的特征叉乘来弥补deep部分的不足，不需要 一个full-size 的wide 模型。</p>
+<p>在论文中，作者通过梯度的反向传播，使用 mini-batch stochastic optimization 训练参数，并对wide部分使用带L1正则的Follow- the-regularized-leader (FTRL) 算法，对deep部分使用 AdaGrad算法。</p>
+<h2 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h2><ul>
+<li>详细解释了目前常用的 Wide 与 Deep 模型各自的优势：Memorization 与 Generalization。</li>
+<li>结合 Wide 与 Deep 的优势，提出了联合训练的 Wide &amp; Deep Learning。相比单独的 Wide / Deep模型，实验显示了Wide &amp; Deep的有效性，并成功将之成功应用于Google Play的app推荐业务。</li>
+<li>目前Wide 结合 Deep的思想已经非常流行，结构虽然简单，从业界的很多反馈来看，合理地结合自身业务借鉴该结构，实际效果确实是efficient。</li>
+</ul>
+<h2 id="1-5-参考"><a href="#1-5-参考" class="headerlink" title="1.5 参考"></a>1.5 参考</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/53361519" target="_blank" rel="noopener">详解 Wide &amp; Deep 结构背后的动机</a></li>
+</ul>
+<h1 id="2、FM算法"><a href="#2、FM算法" class="headerlink" title="2、FM算法"></a>2、FM算法</h1><p>FM算法2010年由Rendle提出的，但是真正在各大厂大规模在CTR预估和推荐领域广泛使用，其实也就是最近几年的事。<a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf" target="_blank" rel="noopener">paper地址</a>。<br>在计算广告和推荐系统中，CTR预估(click-through rate)是非常重要的一个环节，判断一个物品是否进行推荐需要根据CTR预估的点击率排序决定。业界常用的方法有人工特征工程 + LR（Logistic Regression）、GBDT（Gradient Boosting Decision Tree） + LR、FM（Factorization Machine）和FFM（Field-aware Factorization Machine）模型。<br>最近几年出现了很多基于FM改进的方法，如deepFM，FNN，PNN，DCN，xDeepFM等。</p>
+<h2 id="2-1-FM优缺点"><a href="#2-1-FM优缺点" class="headerlink" title="2.1 FM优缺点"></a>2.1 FM优缺点</h2><p>FM（factor Machine，因子分解机）算法是一种基于矩阵分解的机器学习算法，是为了解决大规模稀疏矩阵中特征组合问题。<br>为什么需要FM呢？</p>
+<ul>
+<li><p>特征组合是许多机器学习建模过程中遇到的问题，如果直接建模，可能忽略特征与特征之间的关联信息，因此，可通通过构建新的交叉特征 这一特征组合方式提高模型效果。其实就是增加特征交叉项。</p>
+<blockquote>
+<p>在一般的线性模型中，是各个特征独立思考的，没有考虑到特征之间的相互关系。但是实际上，大量特征之间是关联。 一般女性用户看化妆品服装之类的广告比较多，而男性更青睐各种球类装备。那很明显，女性这个特征与化妆品类服装类商品有很大的关联性，男性这个特征与球类装备的关联性更为密切。如果我们能将这些有关联的特征找出来，显然是很有意义的。</p>
+</blockquote>
+</li>
+<li><p>高维的稀疏矩阵是实际工程中常见的问题，并直接会导致计算量过大，特征权重更新缓慢。而FM的优势，就是在于这两方面问题的处理。首先是特征组合，通过两两特征组合，引入交叉特征，提高模型得分。其次是高维灾难，通过引入隐向量，对特征参数进行估计。</p>
+<blockquote>
+<p>可以在非常稀疏的数据中进行合理的参数估计；FM模型的时间复杂度是线性的；FM是一个通用模型，它可以用于任何特征为实值的情况；同时解决了特征组合问题。</p>
+</blockquote>
+</li>
+<li><p>引入FM的目的：旨在解决稀疏数据下的特征组合问题。优势：高度稀疏的数据场景具有线性计算复杂度。</p>
+</li>
+<li>FM的优点：可以在非常稀疏的数据中，进行合理的参数估计；FM模型的复杂度是线性的，优化效果好，不需要像svm一样依赖于支持向量；FM是一个通用的模型，他咳哟用于任何特征为实值得情况。而其他得因式分解模型只能用于一些输入数据比较固定得情况。</li>
+</ul>
+<p>但是FM也有其缺点，就是组合特征的泛化性比较差。</p>
+<h2 id="2-2-FM特征组合"><a href="#2-2-FM特征组合" class="headerlink" title="2.2 FM特征组合"></a>2.2 FM特征组合</h2><p>多项式模型是包含特征组合的最直观的模型。在多项式模型中，特征$x_{i}$和$x_{j}$的组合采用$x_{i}x_{j}$表示，即$x_{i}$和$x_{j}$都为非零时特征组合$x_{i}x_{j}$才有意义。本文只讨论二阶多项式模型，模型的表达式如下:<br>$$y(X)=w_{0}+\sum^{n}_{i=1}w_{i}x_{i}+\sum^{n}_{i=1}\sum^{n}_{j=n+1}w_{ij}x_{i}x_{j}$$<br>从公式中，我们可以看出组合特征得参数一共有1/2n(n-1)个，任意两个参数都是独立的。然而在数据稀疏性普遍存在的实际场景中，二次项参数的训练是很困难的。原因是：每个参数wij的训练都需要大量xi 和xj都非零的样本；由于样本数据本来就比较稀疏，满足xi，xj都非零的样本将会非常的少。训练样本不足，很容易导致参数wij不准确，最终将严重影响模型的性能。<br>那么，交叉项参数的训练问题可以用矩阵分解来近似解决，有下面的公式:<br>$$y(X)=w_{0}+\sum^{n}_{i=1}w_{i}x_{i}+\sum^{n}_{i=1}\sum^{n}_{j=n+1}&lt;v_{i},v_{j}&gt;x_{i}x_{j}$$<br>其中模型需要估计的参数是：<br>$$<br>w\in R,w \in R^{n},V \in R^{n \times k}<br>$$</p>
+<p>$&lt;\cdot,\cdot&gt;$是两个$K$维向量的内积:<br>$$&lt;v_{i},v_{j}&gt;=\sum^{k}_{k=1}v_{i,f}v_{j,f}$$</p>
+<p>对任意正定矩阵$W$ ，只要$k$足够大，就存在矩阵$W$ ，使得$W=VV^{T}$ 。然而在数据稀疏的情况下，应该选择较小的$k$，因为没有足够的数据来估计$w_{ij}$ 。限制k的大小提高了模型更好的泛化能力。</p>
+<p>为什么说可以提高模型的泛化能力呢？<br>假设我们要计算用户$A$与电影$ST$的交叉项，很显然，训练数据里没有这种情况，这样会导致$w_{A,ST}=0$ ，但是我们可以近似计算出$&lt;V_{A},V_{ST}&gt;$ 。首先，用户$B$ 和$C$ 有相似的向量$V_{B}$ 和$V_{C}$ ，因为他们对$SW$的预测评分比较相似， 所以$&lt;V_{B},V_{SW}&gt;$和$&lt;V_{C},V_{SW}&gt;$是相似的。用户$A$和$C$有不同的向量，因为对$TI$ 和 $SW$的预测评分完全不同。接下来，$ST$和$SW$的向量可能相似，因为用户$B$对这两部电影的评分也相似。最后可以看出，$&lt;V_{A},V_{ST}&gt;$与$&lt;V_{A},V_{SW}&gt;$ 是相似的。</p>
+<p>如果按照上述的方式计算特征交叉时间复杂度是$O(kn^{2})$,因为所有的交叉特征都需要计算。但是通过公式变换，可以减少到线性复杂度，方法如下：<br><img src="/imgs/推荐系统之深度学习模型/02.png" alt="02.png"><br>可以看到这时的时间复杂度为$O(kn)$</p>
+<h2 id="2-3-FM的预测"><a href="#2-3-FM的预测" class="headerlink" title="2.3 FM的预测"></a>2.3 FM的预测</h2><p>FM算法可以应用在多种的预测任务中，包括:</p>
+<ul>
+<li><strong>Regression</strong> :$y(X)$可以直接用作预测，并且最小平方误差来优化。</li>
+<li><strong>Binary classification</strong> ::$y(X)$作为目标函数并且使用hinge loss或者logit loss来优化。</li>
+<li><strong>Ranking</strong> : 向量$X$ 通过$y(X)$的分数排序，并且通过pairwise的分类损失来优化成对的样本$(x^{(a)},x^{(b)})$</li>
+</ul>
+<p>对以上的任务中，正则化项参数一般加入目标函数中以防止过拟合。</p>
+<h2 id="2-4-FM的参数学习"><a href="#2-4-FM的参数学习" class="headerlink" title="2.4 FM的参数学习"></a>2.4 FM的参数学习</h2><p>从上面的描述可以知道FM可以在线性的时间内进行预测。因此模型的参数可以通过梯度下降的方法（例如随机梯度下降）来学习，对于各种的损失函数。FM模型的梯度是：<br>$$<br>\frac{\partial }{\partial \theta}\hat{y}(X)=<br>\begin{cases}<br>1 &amp; \mbox{if }\theta\mbox{ is }w_{0} \\<br>x_{i} &amp; \mbox{if }\theta\mbox{ is }w_{i} \\<br>x_{i}\sum^{n}_{j=1}v_{j,f}x_{i}-v_{i,f}x^{2}_{i} &amp; \mbox{if }\theta\mbox{ is }v_{i,f}<br>\end{cases}<br>$$<br>由于$\sum^{n}_{j=1}v_{j,f}x_{i}$只与$f$有关，与$i$是独立的，可以提前计算出来，并且每次梯度更新可以在常数时间复杂度内完成，因此FM参数训练的复杂度也是$O(kn)$。综上可知，FM可以在线性时间训练和预测，是一种非常高效的模型。</p>
+<h2 id="2-5-多阶FM"><a href="#2-5-多阶FM" class="headerlink" title="2.5 多阶FM"></a>2.5 多阶FM</h2><p>2阶FM可以很容易泛化到高阶：<br>$$<br>y(X)=w_{0}+\sum^{n}_{i=1}w_{i}x_{i}+\sum^{d}_{l=2}\sum^{n}_{i_{1}=1}……\sum^{n}_{i_{l}=i_{l-1}+1}(\prod^{l}_{j=1}x_{ij})(\sum^{k_{l}}_{f=1}\sum^{l}_{j=1}v^{(l)}_{i_{j},f})<br>$$<br>其中对第$l$个交互参数是由PARAFAC模型的参数因子分解得到：<br>$$<br>V^{(l)}\in R^{n \times k_{l}},k_{l} \in N^{+}_{0}<br>$$<br>直接计算公式的时间复杂度是$O(k_{d}n^{d})$ 。通过调整也可以在线性时间内运行。</p>
+<h2 id="2-6-总结"><a href="#2-6-总结" class="headerlink" title="2.6 总结"></a>2.6 总结</h2><p><strong>FM模型有两个优势：</strong></p>
+<ul>
+<li>在高度稀疏的情况下特征之间的交叉仍然能够估计，而且可以泛化到未被观察的交叉</li>
+<li>参数的学习和模型的预测的时间复杂度是线性的</li>
+</ul>
+<p><strong>FM模型的优化点：</strong></p>
+<ul>
+<li>特征为全交叉，耗费资源，通常user与user，item与item内部的交叉的作用要小于user与item的交叉</li>
+<li>使用矩阵计算，而不是for循环计算</li>
+<li>高阶交叉特征的构造</li>
+</ul>
+<h2 id="2-7-参考"><a href="#2-7-参考" class="headerlink" title="2.7 参考"></a>2.7 参考</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/33184179" target="_blank" rel="noopener">FM算法</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/50426292" target="_blank" rel="noopener">FM的理论与实践</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/109980037" target="_blank" rel="noopener">一文读懂FM</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/58160982" target="_blank" rel="noopener">推荐系统召回四模型之：全能的FM模型</a></li>
+</ul>
+<h1 id="3、DeepFM算法"><a href="#3、DeepFM算法" class="headerlink" title="3、DeepFM算法"></a>3、DeepFM算法</h1><p>待更新…</p>
+<h1 id="4、xDeepFM算法"><a href="#4、xDeepFM算法" class="headerlink" title="4、xDeepFM算法"></a>4、xDeepFM算法</h1><p>待更新…</p>
+<h1 id="5、AutoInt算法"><a href="#5、AutoInt算法" class="headerlink" title="5、AutoInt算法"></a>5、AutoInt算法</h1><p>待更新…</p>
+<h1 id="6、DIN网络"><a href="#6、DIN网络" class="headerlink" title="6、DIN网络"></a>6、DIN网络</h1><p>待更新…</p>
+<h1 id="7、MLR算法"><a href="#7、MLR算法" class="headerlink" title="7、MLR算法"></a>7、MLR算法</h1><p>待更新…</p>
+<h1 id="8、NCF算法"><a href="#8、NCF算法" class="headerlink" title="8、NCF算法"></a>8、NCF算法</h1><p>待更新…</p>
+<h1 id="9、YoutubeNet"><a href="#9、YoutubeNet" class="headerlink" title="9、YoutubeNet"></a>9、YoutubeNet</h1><p>待更新…</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐算法/" rel="tag"><i class="fa fa-tag"></i> 推荐算法</a>
+          
+            <a href="/tags/CTR算法/" rel="tag"><i class="fa fa-tag"></i> CTR算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/NLP/BERT算法详解及其应用/" rel="next" title="BERT算法详解及其应用">
+                <i class="fa fa-chevron-left"></i> BERT算法详解及其应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.png"
+                alt="马野" />
+            
+              <p class="site-author-name" itemprop="name">马野</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="xiachiucas@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-E-Mail"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                网站链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.arxiv-sanity.com/top" title="Arixv热搜版" target="_blank">Arixv热搜版</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://paper.yanxishe.com/" title="AI研习社" target="_blank">AI研习社</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xpqiu" title="Fudan NLP" target="_blank">Fudan NLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/thunlp" title="THUNLP" target="_blank">THUNLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.bookstack.cn/read/huaxiaozhuan-ai/README.md" title="《AI算法工程师手册》" target="_blank">《AI算法工程师手册》</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、Wide-amp-Deep模型"><span class="nav-text">1、Wide&amp;Deep模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-背景"><span class="nav-text">1.1 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-模型结构"><span class="nav-text">1.2 模型结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-联合训练"><span class="nav-text">1.3 联合训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-总结"><span class="nav-text">1.4 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-参考"><span class="nav-text">1.5 参考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、FM算法"><span class="nav-text">2、FM算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-FM优缺点"><span class="nav-text">2.1 FM优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-FM特征组合"><span class="nav-text">2.2 FM特征组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-FM的预测"><span class="nav-text">2.3 FM的预测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-FM的参数学习"><span class="nav-text">2.4 FM的参数学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-多阶FM"><span class="nav-text">2.5 多阶FM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-总结"><span class="nav-text">2.6 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-参考"><span class="nav-text">2.7 参考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、DeepFM算法"><span class="nav-text">3、DeepFM算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、xDeepFM算法"><span class="nav-text">4、xDeepFM算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、AutoInt算法"><span class="nav-text">5、AutoInt算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6、DIN网络"><span class="nav-text">6、DIN网络</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7、MLR算法"><span class="nav-text">7、MLR算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8、NCF算法"><span class="nav-text">8、NCF算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9、YoutubeNet"><span class="nav-text">9、YoutubeNet</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">马野</span>
+
+  
+</div>
+
+
+<div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+<div>
+<p >Hosted by <a target="_blank" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'TjWnQkO6exbqDEXcjR0WpplS-gzGzoHsz',
+        appKey: 'NBIbiOSvsE8jCwyazUpjhoOn',
+        placeholder: '欢迎大家来评论',
+        avatar:'mp',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

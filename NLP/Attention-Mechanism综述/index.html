@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="attention,深度学习," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文主要来自文章模型汇总24 - 深度学习中Attention Mechanism详细介绍：原理、分类及应用摘抄，在此基础上加上了更加通俗化表达的内容。因为觉得该文章写的很好，故搬运到博客中来学习。针对文章中部分错误修改，图片尽量更改为清晰图片。 1、简介Attention Mechanism目前非常流行，广泛应用于机器翻译、语音识别、图像标注(Image Caption)等很多领域，之所以它这么">
+<meta name="keywords" content="attention,深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Attention Mechanism综述">
+<meta property="og:url" content="http://www.mayexia.com/NLP/Attention-Mechanism综述/index.html">
+<meta property="og:site_name" content="梵  高  先  生">
+<meta property="og:description" content="本文主要来自文章模型汇总24 - 深度学习中Attention Mechanism详细介绍：原理、分类及应用摘抄，在此基础上加上了更加通俗化表达的内容。因为觉得该文章写的很好，故搬运到博客中来学习。针对文章中部分错误修改，图片尽量更改为清晰图片。 1、简介Attention Mechanism目前非常流行，广泛应用于机器翻译、语音识别、图像标注(Image Caption)等很多领域，之所以它这么">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/01.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/02.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/03.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/04.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/16.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/17.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/18.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/19.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/05.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/06.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/07.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/08.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/09.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/10.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/11.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/12.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/01.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/02.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/13.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/14.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/attention/15.png">
+<meta property="og:updated_time" content="2020-09-27T06:53:05.339Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Attention Mechanism综述">
+<meta name="twitter:description" content="本文主要来自文章模型汇总24 - 深度学习中Attention Mechanism详细介绍：原理、分类及应用摘抄，在此基础上加上了更加通俗化表达的内容。因为觉得该文章写的很好，故搬运到博客中来学习。针对文章中部分错误修改，图片尽量更改为清晰图片。 1、简介Attention Mechanism目前非常流行，广泛应用于机器翻译、语音识别、图像标注(Image Caption)等很多领域，之所以它这么">
+<meta name="twitter:image" content="http://www.mayexia.com/imgs/attention/01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mayexia.com/NLP/Attention-Mechanism综述/"/>
+
+
+
+
+
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+  <title>Attention Mechanism综述 | 梵  高  先  生</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梵  高  先  生</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.mayexia.com/NLP/Attention-Mechanism综述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="马野">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梵  高  先  生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Attention Mechanism综述</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-12T20:06:14+08:00">
+                2018-12-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/NLP/Attention-Mechanism综述/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/NLP/Attention-Mechanism综述/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要来自文章<a href="https://zhuanlan.zhihu.com/p/31547842" target="_blank" rel="noopener">模型汇总24 - 深度学习中Attention Mechanism详细介绍：原理、分类及应用</a>摘抄，在此基础上加上了更加通俗化表达的内容。因为觉得该文章写的很好，故搬运到博客中来学习。针对文章中部分错误修改，图片尽量更改为清晰图片。</p>
+<h1 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h1><p>Attention Mechanism目前非常流行，广泛应用于机器翻译、语音识别、图像标注(Image Caption)等很多领域，之所以它这么受欢迎，是因为Attention给模型赋予了区分辨别的能力，例如，在机器翻译、语音识别应用中，为句子中的每个词赋予不同的权重，使神经网络模型的学习变得更加灵活(soft)，同时Attention本身可以做为一种对齐关系，解释翻译输入/输出句子之间的对齐关系，解释模型到底学到了什么知识，为我们打开深度学习的黑箱，提供了一个窗口，如下图所示(NLP中的attention可视化):<br><img src="/imgs/attention/01.png" alt="NLP中的attention可视化"><br>又比如在图像标注应用中，可以解释图片不同的区域对于输出Text序列的影响程度,下图展示了图像标注中的attention可视化。<br><img src="/imgs/attention/02.png" alt="图像标注中的attention可视化"><br>通过上述Attention Mechanism在图像标注应用的case可以发现，Attention Mechanism与人类对外界事物的观察机制很类似，当人类观察外界事物的时候，一般不会把事物当成一个整体去看，往往倾向于根据需要选择性的去获取被观察事物的某些重要部分，比如我们看到一个人时，往往先Attention到这个人的脸，然后再把不同区域的信息组合起来，形成一个对被观察事物的整体印象。因此，Attention Mechanism可以帮助模型对输入的X每个部分赋予不同的权重，抽取出更加关键及重要的信息，使模型做出更加准确的判断，同时不会对模型的计算和存储带来更大的开销，这也是Attention Mechanism应用如此广泛的原因。</p>
+<h1 id="2、Attention-Mechanism原理"><a href="#2、Attention-Mechanism原理" class="headerlink" title="2、Attention Mechanism原理"></a>2、Attention Mechanism原理</h1><h2 id="2-1、Attention-Mechanism主要需要解决的问题"><a href="#2-1、Attention-Mechanism主要需要解决的问题" class="headerlink" title="2.1、Attention Mechanism主要需要解决的问题"></a>2.1、Attention Mechanism主要需要解决的问题</h2><p>在论文<a href="https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf" target="_blank" rel="noopener">《Sequence to Sequence Learning with Neural Networks》</a>中介绍了一种基于RNN的Seq2Seq机器翻译模型。该模型基于一个编码器(Encoder)和一个解码器(Decoder)来构建基于神经网络的端到端的机器翻译模型。但是该模型通过Encoder将输入$X$编码为一个固定长度的隐向量$Z$,然后解码器通过该隐向量$Z$来解码出目标输出$Y$。该模型由google于2014年提出，但是该模型存在以下几个缺点：</p>
+<ul>
+<li>把输入X的所有信息有压缩到一个固定长度的隐向量Z，会造成信息的损失，且忽略了输入X的长度，当输入句子长度很长，特别是比训练集中最初的句子长度还长时，模型的性能急剧下降。</li>
+<li>把输入X编码成一个固定的长度，对于句子中每个词都赋予相同的权重，这样做是不合理的，比如，在机器翻译里，输入的句子与输出句子之间，往往是输入一个或几个词对应于输出的一个或几个词。因此，对输入的每个词赋予相同权重，这样做没有区分度，往往是模型性能下降。</li>
+</ul>
+<p>同样的问题也存在于图像识别领域，卷积神经网络CNN对输入的图像每个区域做相同的处理，这样做没有区分度，特别是当处理的图像尺寸非常大时，问题更明显。因此，2015年，Dzmitry Bahdanau等人在《Neural machine translation by jointly learning to align and translate》提出了Attention Mechanism，用于对输入X的不同部分赋予不同的权重，进而实现软区分的目的。</p>
+<h2 id="2-2、Attention-Mechanism原理"><a href="#2-2、Attention-Mechanism原理" class="headerlink" title="2.2、Attention Mechanism原理"></a>2.2、Attention Mechanism原理</h2><p>在介绍Attention Mechanism结构和原理之前，我们首先介绍下Seq2Seq模型的结构。基于RNN的Seq2Seq模型主要由两篇论文介绍，只是采用了不同的RNN模型。Ilya Sutskever等人与2014年在论文《Sequence to Sequence Learning with Neural Networks》中使用LSTM来搭建Seq2Seq模型。随后，2015年，Kyunghyun Cho等人在论文《Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation》提出了基于GRU的Seq2Seq模型。两篇文章所提出的Seq2Seq模型，想要解决的主要问题是，如何把机器翻译中，变长的输入X映射到一个变长输出Y的问题,其主要结构如下图所示：</p>
+<p><img src="/imgs/attention/03.png" alt="传统的Seq2Seq结构" align="center" width="70%" height="70%"></p>
+<p>其中，Encoder把一个变成的输入序列$x_{1}，x_{2}，x_{3}….x_{t}$编码成一个固定长度隐向量c(上下文向量context)，c的作用有两个:</p>
+<ul>
+<li>做为初始向量初始化Decoder的模型，做为decoder模型预测y1的初始向量。</li>
+<li>做为背景向量，指导y序列中每一个step的y的产出。Decoder主要基于背景向量c和上一步的输出yt-1解码得到该时刻t的输出yt，直到碰到结束标志(&lt; EOS &gt;)为止。</li>
+</ul>
+<p>如上文所述，传统的Seq2Seq模型对输入序列X缺乏区分度，因此，2015年，Kyunghyun Cho等人在论文《Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation》中，引入了Attention Mechanism来解决这个问题，他们提出的模型结构如下图所示</p>
+<p><img src="/imgs/attention/04.png" alt="Attention Mechanism模块图解" align="center" width="60%" height="60%"></p>
+<p>在该模型中，定义了一个条件概率：<br>$$<br>p(y_{i}|y_{1},y_{2},…,y_{i-1};X)=g(y_{i-1},s_{i},c_{i})<br>$$<br>其中，si是decoder中RNN在在i时刻的隐状态，如图中所示，其计算公式为：<br>$$<br>s_{i}=f(s_{i-1},y_{i-1},c_{i})<br>$$<br>这里的背景向量$c_{i}$的计算方式，与传统的Seq2Seq模型直接累加的计算方式不一样，这里的ci是一个权重化(Weighted)之后的值，其表达式如公式所示：<br>$$<br>c_{i}=\sum_{j=1}^{T_{x}}\alpha_{ij}h_{j}<br>$$<br>其中，i表示decoder端的第i个词，$h_{j}$表示encoder端的第j和词的隐向量，$a_{ij}$表示encoder端的第j个词与decoder端的第i个词之间的权值，表示源端第j个词对目标端第i个词的影响程度，$a_{ij}$的计算公式如下所示:<br>$$<br>\alpha_{ij}=\frac{exp(e_{ij})}{\sum_{k=1}^{T_{x}}exp(e_{ik})}<br>$$</p>
+<p>$$<br>e_{ij} = a(s_{i-1},h_{j})<br>$$<br>在上述公式中，$a_{ij}$是一个softmax模型输出，概率值的和为1。$e_{ij}$表示一个对齐模型，用于衡量encoder端的位置j个词，对于decoder端的位置i个词的对齐程度(影响程度)，换句话说：decoder端生成位置i的词时，有多少程度受encoder端的位置j的词影响。对齐模型$e_{ij}$的计算方式有很多种，不同的计算方式，代表不同的Attention模型，最简单且最常用的的对齐模型是dot product乘积矩阵，即把target端的输出隐状态$h_{t}$与source端的输出隐状态进行矩阵乘。常见的对齐计算方式如下：<br>$$score(h_t,\hat h_s) = \begin{cases}<br>h_{t}^{T}\hat h_s &amp; dot \\<br>h_{t}^{T}W_{\alpha}\hat h_s &amp; general \\<br>v_{a}^{T}tanh(W_{a}[h_{t};\hat h_s]) &amp; concat<br>\end{cases}$$<br>其中,$score(h_t,\hat h_s) =a_{ij}$表示源端与目标单单词对齐程度。可见，常见的对齐关系计算方式有，点乘(Dot product)，权值网络映射(General)和concat映射几种方式。</p>
+<h2 id="2-3、通俗理解Attention-Mechanism原理"><a href="#2-3、通俗理解Attention-Mechanism原理" class="headerlink" title="2.3、通俗理解Attention Mechanism原理"></a>2.3、通俗理解Attention Mechanism原理</h2><p><strong><em>1、核心思想</em></strong><br>Attention的思想理解起来比较容易，就是在decoding阶段对input中的信息赋予不同权重。在nlp中就是针对sequence的每个time step input，在cv中就是针对每个pixel。</p>
+<p><strong><em>2、原理解析</em></strong><br>针对Seq2seq翻译来说，rnn-based model差不多是下图的样子：<br><img src="/imgs/attention/16.jpg" alt="Seq2seq模型"></p>
+<p>而比较基础的加入attention与rnn结合的model是下面的样子（也叫soft attention）：<br><img src="/imgs/attention/17.jpg" alt="attention机制1"><br><img src="/imgs/attention/18.jpg" alt="attention机制2"><br>其中$\alpha_{0}^1$ 是$h_{0}^1$对应的权重，算出所有权重后会进行softmax和加权，得到$c^0$。</p>
+<p>可以看到Encoding和decoding阶段仍然是rnn，但是decoding阶使用attention的输出结果$c^0$, $c^1$作为rnn的输入。</p>
+<p><strong><em>那么重点来了， 权重$\alpha$是怎么来的呢？常见有三种方法：</em></strong></p>
+<ul>
+<li>方式1(dot):$\alpha_{0}^1=cos\_ sim(z_0, h_1)$</li>
+<li>方式2(concat):$\alpha_0 =neural\_ network(z_0, h)$</li>
+<li>方式3(general):$\alpha_0 = h^TWz_0$</li>
+</ul>
+<p>思想就是根据当前解码“状态”判断输入序列的权重分布。</p>
+<p>如果把attention剥离出来去看的话，其实是以下的机制：<br><img src="/imgs/attention/19.jpg" alt="attention机制3"><br>输入是query(Q), key(K), value(V)，输出是attention value。如果与之前的模型对应起来的话，query就是$z_0$,$z_1$，key就是$h_1$,$h_2$, $h_3$,$h_4$，value也是$h_1$,$h_2$,$h_3$,$h_4$。模型通过Q和K的匹配计算出权重，再结合V得到输出：<br>$$<br>Attention(Q, K, V) = softmax(sim(Q, K))V<br>$$<br>再深入理解下去，这种机制其实做的是寻址（addressing），也就是模仿中央处理器与存储交互的方式将存储的内容读出来，可以看一下<a href="http://link.zhihu.com/?target=http%3A//speech.ee.ntu.edu.tw/%7Etlkagk/courses_MLSD15_2.html" target="_blank" rel="noopener">李宏毅老师的课程</a>。</p>
+<h1 id="3、Attention-Mechanism分类"><a href="#3、Attention-Mechanism分类" class="headerlink" title="3、Attention Mechanism分类"></a>3、Attention Mechanism分类</h1><p>Attention Mechanism的基本结构包含soft Attention 与Hard Attention，组合结构包含Hierarchical Attention、Attention over Attention、Multi-Step Attention等。</p>
+<h2 id="3-1、基本attention结构"><a href="#3-1、基本attention结构" class="headerlink" title="3.1、基本attention结构"></a>3.1、基本attention结构</h2><h3 id="3-1-1、soft-Attention-与Hard-Attention"><a href="#3-1-1、soft-Attention-与Hard-Attention" class="headerlink" title="3.1.1、soft Attention 与Hard Attention"></a>3.1.1、soft Attention 与Hard Attention</h3><p>Kelvin Xu等人与2015年发表论文《Show, Attend and Tell: Neural Image Caption Generation with Visual Attention》，在Image Caption中引入了Attention，当生成第i个关于图片内容描述的词时，用Attention来关联与i个词相关的图片的区域。Kelvin Xu等人在论文中使用了两种Attention Mechanism，即Soft Attention和Hard Attention。我们之前所描述的传统的Attention Mechanism就是Soft Attention。Soft Attention是参数化的(Parameterization)，因此可导，可以被嵌入到模型中去，直接训练。梯度可以经过Attention Mechanism模块，反向传播到模型其他部分。</p>
+<p>相反，Hard Attention是一个随机的过程。Hard Attention不会选择整个encoder的输出做为其输入，Hard Attention会依概率$S_i$来采样输入端的隐状态一部分来进行计算，而不是整个encoder的隐状态。为了实现梯度的反向传播，需要采用蒙特卡洛采样的方法来估计模块的梯度。</p>
+<p>两种Attention Mechanism都有各自的优势，但目前更多的研究和应用还是更倾向于使用Soft Attention，因为其可以直接求导，进行梯度反向传播。</p>
+<h3 id="3-1-2、Global-Attention-和-Local-Attention"><a href="#3-1-2、Global-Attention-和-Local-Attention" class="headerlink" title="3.1.2、Global Attention 和 Local Attention"></a>3.1.2、Global Attention 和 Local Attention</h3><p><strong>Global Attention</strong>：传统的Attention model一样。所有的hidden state都被用于计算Context vector 的权重，即变长的对齐向量$a_t$，其长度等于encoder端输入句子的长度。<br><img src="/imgs/attention/05.png" alt="Global Attention模型示意图"><br>在t时刻，首先基于decoder的隐状态ht和源端的隐状态$h_s$，计算一个变长的隐对齐权值向量$a_t$，其计算公式如下：<br>$$<br>\begin{split}<br>a_{t}(s) {} &amp; =align(h_{t},\hat h_s) \\<br>         {} &amp; =\frac{exp(score(h_t,\hat h_s))}{\sum_{s^{’}}exp(score(h_t,\hat h_{s^{’}}))}<br>\end{split}<br>$$</p>
+<p>其中，score是一个用于评价$h_t$与$h_s$之间关系的函数，即对齐函数，一般有三种计算方式，我们在上文中已经提到了。公式如下：<br>$$score(h_t,\hat h_s) = \begin{cases}<br>h_{t}^{T}\hat h_s &amp; dot \\<br>h_{t}^{T}W_{\alpha}\hat h_s &amp; general \\<br>v_{a}^{T}tanh(W_{a}[h_{t};\hat h_s]) &amp; concat<br>\end{cases}$$<br>得到对齐向量$a_t$之后，就可以通过加权平均的方式，得到上下文向量$c_t$。</p>
+<p><strong>Local Attention</strong>：Global Attention有一个明显的缺点就是，每一次，encoder端的所有hidden state都要参与计算，这样做计算开销会比较大，特别是当encoder的句子偏长，比如，一段话或者一篇文章，效率偏低。因此，为了提高效率，Local Attention应运而生。</p>
+<p>Local Attention是一种介于Kelvin Xu所提出的Soft Attention和Hard Attention之间的一种Attention方式，即把两种方式结合起来。其结构如下图所示<br><img src="/imgs/attention/06.png" alt="Local Attention模型示意图"><br>Local Attention首先会为decoder端当前的词，预测一个source端对齐位置(aligned position)$p_t$，然后基于$p_t$选择一个窗口，用于计算背景向量$c_t$。Position $p_t$的计算公式如下:<br>$$<br>p_{t}=S \cdot sigmoid(v_{p}^{T}tanh(W_{p}h_{t}))<br>$$<br>其中，S是encoder端句子长度，$v_p$和$w_p$是模型参数。此时，对齐向量$a_t$的计算公式如下：<br>$$<br>a_{t}(s)=align(h_{t},\hat h_s)exp\big(-\frac{(s-p_{t})^2}{2\delta^2}\big)<br>$$<br>总之，Global Attention和Local Attention各有优劣，在实际应用中，Global Attention应用更普遍，因为local Attention需要预测一个位置向量p，这就带来两个问题：</p>
+<ul>
+<li>当encoder句子不是很长时，相对Global Attention，计算量并没有明显减小。</li>
+<li>位置向量pt的预测并不非常准确，这就直接计算的到的local Attention的准确率。</li>
+</ul>
+<h3 id="3-1-3、Self-Attention"><a href="#3-1-3、Self-Attention" class="headerlink" title="3.1.3、Self Attention"></a>3.1.3、Self Attention</h3><p>Self Attention与传统的Attention机制非常的不同：传统的Attention是基于source端和target端的隐变量(hidden state)计算Attention的，得到的结果是源端的每个词与目标端每个词之间的依赖关系。但Self Attention不同，它分别在source端和target端进行，仅与source input或者target input自身相关的Self Attention，捕捉source端或target端自身的词与词之间的依赖关系；然后再把source端的得到的self Attention加入到target端得到的Attention中，捕捉source端和target端词与词之间的依赖关系。因此，self Attention Attention比传统的Attention mechanism效果要好，主要原因之一是，传统的Attention机制忽略了源端或目标端句子中词与词之间的依赖关系，相对比，self Attention可以不仅可以得到源端与目标端词与词之间的依赖关系，同时还可以有效获取源端或目标端自身词与词之间的依赖关系，如下图所示：<br><img src="/imgs/attention/07.png" alt="self attention可视化实例"><br>Self Attention的具体计算方式如下图所示<br><img src="/imgs/attention/08.png" alt="self attention计算框架" align="center" width="60%" height="60%"><br>Encoder的输入inputs和decoder的输入outputs，加上position embedding，做为各自的最初的输入，那么问题来了，self Attention具体是怎么实现的呢？从All Attention的结构示意图可以发现，Encoder和decoder是层叠多了类似的Multi-Head Attention单元构成，而每一个Multi-Head Attention单元由多个结构相似的Scaled Dot-Product Attention单元组成，结构如下图所示。<br><img src="/imgs/attention/09.png" alt="Multi-Head Attention结构示意图"><br>Self Attention也是在Scaled Dot-Product Attention单元里面实现的，如上图左图所示，首先把输入Input经过线性变换分别得到Q、K、V，注意，Q、K、V都来自于Input，只不过是线性变换的矩阵的权值不同而已。然后把Q和K做dot Product相乘，得到输入Input词与词之间的依赖关系，然后经过尺度变换(scale)、掩码(mask)和softmax操作，得到最终的Self Attention矩阵。尺度变换是为了防止输入值过大导致训练不稳定，mask则是为了保证时间的先后关系。</p>
+<p>最后，把encoder端self Attention计算的结果加入到decoder做为k和V，结合decoder自身的输出做为q，得到encoder端的attention与decoder端attention之间的依赖关系。</p>
+<h2 id="3-2、组合的attention结构"><a href="#3-2、组合的attention结构" class="headerlink" title="3.2、组合的attention结构"></a>3.2、组合的attention结构</h2><h3 id="3-2-1、Hierarchical-Attention"><a href="#3-2-1、Hierarchical-Attention" class="headerlink" title="3.2.1、Hierarchical Attention"></a>3.2.1、Hierarchical Attention</h3><p>Zichao Yang等人在论文<a href="http://www.aclweb.org/anthology/N16-1174" target="_blank" rel="noopener">《Hierarchical Attention Networks for Document Classification》</a>提出了Hierarchical Attention用于文档分类。Hierarchical Attention构建了两个层次的Attention Mechanism，第一个层次是对句子中每个词的attention，即word attention；第二个层次是针对文档中每个句子的attention，即sentence attention。网络结构如下图所示:<br><img src="/imgs/attention/10.png" alt="Hierarchical Attention结构示意图" align="center" width="60%" height="60%"></p>
+<p>整个网络结构由四个部分组成：一个由双向RNN(GRU)构成的word sequence encoder，然后是一个关于词的word-level的attention layer；基于word attention layar之上，是一个由双向RNN构成的sentence encoder，最后的输出层是一个sentence-level的attention layer。</p>
+<h3 id="3-2-2、Attention-over-Attention"><a href="#3-2-2、Attention-over-Attention" class="headerlink" title="3.2.2、Attention over Attention"></a>3.2.2、Attention over Attention</h3><p>Yiming Cui与2017年在论文<a href="https://arxiv.org/pdf/1607.04423.pdf" target="_blank" rel="noopener">《Attention-over-Attention Neural Networks for Reading Comprehension》</a>中提出了Attention Over Attention的Attention机制,结构如下图所示:<br><img src="/imgs/attention/11.png" alt="Attention-over-Attention结构示意图"><br>两个输入，一个Document和一个Query，分别用一个双向的RNN进行特征抽取，得到各自的隐状态h(doc)和h(query)，然后基于query和doc的隐状态进行dot product，得到query和doc的attention关联矩阵。然后按列(colum)方向进行softmax操作，得到query-to-document的attention 值a(t)；按照行(row)方向进行softmax操作，得到document-to-query的attention值b(t)，再按照列方向进行累加求平均得到平均后的attention值b(t)。最后再基于上一步attention操作得到a(t)和b(t)，再进行attention操作，即attention over attention得到最终query与document的关联矩阵。</p>
+<h3 id="3-2-3、Multi-Step-Attention"><a href="#3-2-3、Multi-Step-Attention" class="headerlink" title="3.2.3、Multi-Step Attention"></a>3.2.3、Multi-Step Attention</h3><p>2017年，FaceBook 人工智能实验室的Jonas Gehring等人在论文<a href="https://arxiv.org/pdf/1705.03122.pdf" target="_blank" rel="noopener">《Convolutional Sequence to Sequence Learning》</a>提出了完全基于CNN来构建Seq2Seq模型，除了这一最大的特色之外，论文中还采用了多层Attention Mechanism，来获取encoder和decoder中输入句子之间的关系,如下图所示:<br><img src="/imgs/attention/12.png" alt="Multi-Step Attention结构示意图" align="center" width="60%" height="60%"></p>
+<p>完全基于CNN的Seq2Seq模型需要通过层叠多层来获取输入句子中词与词之间的依赖关系，特别是当句子非常长的时候，我曾经实验证明，层叠的层数往往达到10层以上才能取得比较理想的结果。针对每一个卷记得step（输入一个词）都对encoder的hidden state和decoder的hidden state进行dot product计算得到最终的Attention 矩阵，并且基于最终的attention矩阵去指导decoder的解码操作。</p>
+<h1 id="4、Attention的应用场景"><a href="#4、Attention的应用场景" class="headerlink" title="4、Attention的应用场景"></a>4、Attention的应用场景</h1><h2 id="4-1、机器翻译-Machine-Translation"><a href="#4-1、机器翻译-Machine-Translation" class="headerlink" title="4.1、机器翻译(Machine Translation)"></a>4.1、机器翻译(Machine Translation)</h2><p>给定一个法语句子做为输入序列，翻译并输出一个英文句子做为输出序列。Attention用于关联输出序列中每个单词与输入序列中的某个特定单词的关联程度。</p>
+<p>“我们扩展了传统的编码器-解码器结构，赋予decoder，在生成目标端（target）的词时，可以自动（软）搜索一组与之相关的输入序列的能力。这使得模型不必将整个源句子编码成一个固定长度的向量，并且还使模型只关注源端与下一个目标词的生成有关的信息。”</p>
+<p>Dzmitry Bahdanau等人，《Neural machine translation by jointly learning to align and translate》，2015。<br><img src="/imgs/attention/01.png" alt="NLP中的attention可视化"><br>通过Attention来解释法语到英语单词之间的对应关系。摘自Dzmitry Bahdanau的论文</p>
+<h2 id="4-2、图像标注-Image-Captain"><a href="#4-2、图像标注-Image-Captain" class="headerlink" title="4.2、图像标注(Image Captain)"></a>4.2、图像标注(Image Captain)</h2><p>基于序列的Attention Mechanism可以应用于计算机视觉问题，以帮助理解如何最好地利用卷积神经网络来省长一段关于图片内容的描述，也称为Caption。</p>
+<p>给定输入图像，输出图像的英文描述。使用Attention是为输出序列中的每个单词关注图像中不同部分。</p>
+<p>“我们提出了一种基于Attention mechanism的方法，并在在三个标准数据集上都取得了最好的成绩…我们还展示了如何利用学到的Attention来提供更多对模型生成过程的解释，并且证明Attention学习到的对齐与人类视觉感知非常一致。”</p>
+<p>Kelvin Xu等人，《Attend and Tell: Neural Image Caption Generation with Visual Attention》, 2016<br><img src="/imgs/attention/02.png" alt="图像标注中的attention可视化"></p>
+<h2 id="4-3、关系抽取-EntailMent-Extraction"><a href="#4-3、关系抽取-EntailMent-Extraction" class="headerlink" title="4.3、关系抽取(EntailMent Extraction)"></a>4.3、关系抽取(EntailMent Extraction)</h2><p>给定一个用英语描述前景描述（premise scenario）和假设（hypothesis），判读假设（premise）与假设（hypothesis）的关系：矛盾，相关或包含。</p>
+<p>例如：</p>
+<p>前提：“一场婚礼中拍照”</p>
+<p>假设：“有人结婚”</p>
+<p>Attention被用来把假设中的每个单词与前提中的单词联系起来，反之亦然。</p>
+<p>“我们提出了一个基于LSTM的神经模型，它一次读取两个句子来确定两个句子之间的蕴含关系，而不是将每个句子独立映射到一个语义空间。我们引入逐字的（word-by-word）Attention Mechanism来扩展这个模型，来强化模型对单词或短语对的关系推理能力。该模型比传统的仅基于LSTM的模型高2.6个百分点，取得了一个最高成就”</p>
+<p>-Tim Rocktäschel，《Reasoning about Entailment with Neural Attention》, 2016<br><img src="/imgs/attention/13.png" alt="词之间的对应关系"><br>基于Attention来解释前提和假设中词与词之间的对应关系</p>
+<h2 id="4-4、语音识别-Speech-Recognition"><a href="#4-4、语音识别-Speech-Recognition" class="headerlink" title="4.4、语音识别(Speech Recognition)"></a>4.4、语音识别(Speech Recognition)</h2><p>给定一段英语语音片段做为输入序列，输出对应的音素序列。</p>
+<p>Attention被用联将输出序列中的每个音素与输入序列中的特定音频帧相关联。</p>
+<p>“基于混合Attention机制的新型端到端可训练语音识别体系结构，其结合内容和位置信息帮助选择输入序列中的下一个位置用于解码。所提出的模型的一个理想特性就是它可以识别比训练集中句子的更长的句子。”<br>-Jan Chorowski，《Attention-Based Models for Speech Recognition》, 2015.。<br><img src="/imgs/attention/14.png" alt=" Alignments produced by the baseline model"></p>
+<h2 id="4-5、自动摘要生成-Text-Summarization"><a href="#4-5、自动摘要生成-Text-Summarization" class="headerlink" title="4.5、自动摘要生成(Text Summarization)"></a>4.5、自动摘要生成(Text Summarization)</h2><p>给定一篇英文文章做为输入顺序，输出一个总结英文文章注意内容的摘要句子。</p>
+<p>Attention用于将输出摘要中的每个单词与输入文档中的特定单词相关联。</p>
+<p>“将基于Attention的神经网络用语摘要抽取。我们将这个概率模型与可以产生准确的摘要的生成算法相结合。”</p>
+<p>-Alexander M. Rush，《A Neural Attention Model for Abstractive Sentence Summarization》, 2015<br><img src="/imgs/attention/15.png" alt="Example output of the attention-based summarization(ABS) system" align="center" width="60%" height="60%"><br>基于Attention来解释输入Sentence与输出Summary之间单词的对应关系</p>
+<p>Attention Mechanism现在应用非常广泛，这里就列出这几个case供大家参考。</p>
+<h1 id="5、参考文献"><a href="#5、参考文献" class="headerlink" title="5、参考文献"></a>5、参考文献</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/31547842" target="_blank" rel="noopener">模型汇总24 - 深度学习中Attention Mechanism详细介绍：原理、分类及应用</a></li>
+<li><a href="https://arxiv.org/pdf/1706.03762.pdf" target="_blank" rel="noopener">Attention Is All You Need</a></li>
+<li><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" target="_blank" rel="noopener">Attention in Long Short-Term Memory Recurrent Neural Networks</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/43493999" target="_blank" rel="noopener">【NLP】Attention原理和源码解析</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/attention/" rel="tag"><i class="fa fa-tag"></i> attention</a>
+          
+            <a href="/tags/深度学习/" rel="tag"><i class="fa fa-tag"></i> 深度学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/机器学习/机器学习评价指标/" rel="next" title="机器学习评价指标">
+                <i class="fa fa-chevron-left"></i> 机器学习评价指标
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/工程工具/tensorflow小技巧/" rel="prev" title="tensorflow小技巧">
+                tensorflow小技巧 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.png"
+                alt="马野" />
+            
+              <p class="site-author-name" itemprop="name">马野</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="xiachiucas@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-E-Mail"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                网站链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.arxiv-sanity.com/top" title="Arixv热搜版" target="_blank">Arixv热搜版</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://paper.yanxishe.com/" title="AI研习社" target="_blank">AI研习社</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xpqiu" title="Fudan NLP" target="_blank">Fudan NLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/thunlp" title="THUNLP" target="_blank">THUNLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.bookstack.cn/read/huaxiaozhuan-ai/README.md" title="《AI算法工程师手册》" target="_blank">《AI算法工程师手册》</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、简介"><span class="nav-text">1、简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、Attention-Mechanism原理"><span class="nav-text">2、Attention Mechanism原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1、Attention-Mechanism主要需要解决的问题"><span class="nav-text">2.1、Attention Mechanism主要需要解决的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2、Attention-Mechanism原理"><span class="nav-text">2.2、Attention Mechanism原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3、通俗理解Attention-Mechanism原理"><span class="nav-text">2.3、通俗理解Attention Mechanism原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、Attention-Mechanism分类"><span class="nav-text">3、Attention Mechanism分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1、基本attention结构"><span class="nav-text">3.1、基本attention结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1、soft-Attention-与Hard-Attention"><span class="nav-text">3.1.1、soft Attention 与Hard Attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2、Global-Attention-和-Local-Attention"><span class="nav-text">3.1.2、Global Attention 和 Local Attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3、Self-Attention"><span class="nav-text">3.1.3、Self Attention</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2、组合的attention结构"><span class="nav-text">3.2、组合的attention结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1、Hierarchical-Attention"><span class="nav-text">3.2.1、Hierarchical Attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2、Attention-over-Attention"><span class="nav-text">3.2.2、Attention over Attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3、Multi-Step-Attention"><span class="nav-text">3.2.3、Multi-Step Attention</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、Attention的应用场景"><span class="nav-text">4、Attention的应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1、机器翻译-Machine-Translation"><span class="nav-text">4.1、机器翻译(Machine Translation)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2、图像标注-Image-Captain"><span class="nav-text">4.2、图像标注(Image Captain)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3、关系抽取-EntailMent-Extraction"><span class="nav-text">4.3、关系抽取(EntailMent Extraction)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4、语音识别-Speech-Recognition"><span class="nav-text">4.4、语音识别(Speech Recognition)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5、自动摘要生成-Text-Summarization"><span class="nav-text">4.5、自动摘要生成(Text Summarization)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、参考文献"><span class="nav-text">5、参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">马野</span>
+
+  
+</div>
+
+
+<div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+<div>
+<p >Hosted by <a target="_blank" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'TjWnQkO6exbqDEXcjR0WpplS-gzGzoHsz',
+        appKey: 'NBIbiOSvsE8jCwyazUpjhoOn',
+        placeholder: '欢迎大家来评论',
+        avatar:'mp',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

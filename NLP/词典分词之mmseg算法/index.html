@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="分词,词典分词," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、简介MMSeg是由台湾学者蔡志浩（Chih-Hao Tsai）于1996年提出的基于字符串匹配（亦称基于词典）的中文分词算法。词典分词应用广、可控、速度快，但也存在无法解决歧义问题，比如，“武汉市长江大桥”是应分词“武汉/市长/江大桥”还是“武汉市/长江/大桥”。基于此，有人提出了正向最大匹配策略，但是可能会出现分词错误的情况，比如：若词典中有“武汉市长”，则原句被分词成“武汉市长/江大桥”。">
+<meta name="keywords" content="分词,词典分词">
+<meta property="og:type" content="article">
+<meta property="og:title" content="词典分词之mmseg算法原理及其实现">
+<meta property="og:url" content="http://www.mayexia.com/NLP/词典分词之mmseg算法/index.html">
+<meta property="og:site_name" content="梵  高  先  生">
+<meta property="og:description" content="1、简介MMSeg是由台湾学者蔡志浩（Chih-Hao Tsai）于1996年提出的基于字符串匹配（亦称基于词典）的中文分词算法。词典分词应用广、可控、速度快，但也存在无法解决歧义问题，比如，“武汉市长江大桥”是应分词“武汉/市长/江大桥”还是“武汉市/长江/大桥”。基于此，有人提出了正向最大匹配策略，但是可能会出现分词错误的情况，比如：若词典中有“武汉市长”，则原句被分词成“武汉市长/江大桥”。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-27T06:53:05.348Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="词典分词之mmseg算法原理及其实现">
+<meta name="twitter:description" content="1、简介MMSeg是由台湾学者蔡志浩（Chih-Hao Tsai）于1996年提出的基于字符串匹配（亦称基于词典）的中文分词算法。词典分词应用广、可控、速度快，但也存在无法解决歧义问题，比如，“武汉市长江大桥”是应分词“武汉/市长/江大桥”还是“武汉市/长江/大桥”。基于此，有人提出了正向最大匹配策略，但是可能会出现分词错误的情况，比如：若词典中有“武汉市长”，则原句被分词成“武汉市长/江大桥”。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mayexia.com/NLP/词典分词之mmseg算法/"/>
+
+
+
+
+
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+  <title>词典分词之mmseg算法原理及其实现 | 梵  高  先  生</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梵  高  先  生</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.mayexia.com/NLP/词典分词之mmseg算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="马野">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梵  高  先  生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">词典分词之mmseg算法原理及其实现</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-16T17:00:25+08:00">
+                2018-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/NLP/词典分词之mmseg算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/NLP/词典分词之mmseg算法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h1><p><a href="http://technology.chtsai.org/mmseg/" target="_blank" rel="noopener">MMSeg</a>是由台湾学者蔡志浩（Chih-Hao Tsai）于1996年提出的基于字符串匹配（亦称基于词典）的中文分词算法。词典分词应用广、可控、速度快，但也存在无法解决歧义问题，比如，“武汉市长江大桥”是应分词“武汉/市长/江大桥”还是“武汉市/长江/大桥”。基于此，有人提出了正向最大匹配策略，但是可能会出现分词错误的情况，比如：若词典中有“武汉市长”，则原句被分词成“武汉市长/江大桥”。单纯的最大匹配还是无法完美地解决歧义，因而MMSeg在正向最大匹配的基础上设计了四个启发式规则，解决了词典分词的歧义问题。</p>
+<p>使用过MMSEG分词算法的人反馈都不错，觉得这个算法简单高效，而且还非常准确。作者声称这个规则达到了99.69%的准确率并且93.21%的歧义能被这个规则消除。</p>
+<h1 id="2、MMseg分词算法原理"><a href="#2、MMseg分词算法原理" class="headerlink" title="2、MMseg分词算法原理"></a>2、MMseg分词算法原理</h1><h2 id="2-1、基本含义"><a href="#2-1、基本含义" class="headerlink" title="2.1、基本含义"></a>2.1、基本含义</h2><p>MMSeg的字符串匹配算法分为两种</p>
+<ul>
+<li>Simple，即简单的正向匹配，根据开头的字，列出所有可能的结果，取最大匹配结果；</li>
+<li>Complex，匹配出所有的“三个词的词组”（即原文中的chunk，“词组”），即从某一既定的字为起始位置，得到所有可能的“以三个词为一组”的所有组合，设计了四个去歧义规则（Ambiguity Resolution Rules）指导分词。</li>
+</ul>
+<p>接下我们主要讲Complex的原理。<br>首先来理解一下chunk，它是MMSeg分词算法中一个关键的概念。Chunk中包含依据上下文分出的一组词和相关的属性，包括长度(Length)、平均长度(Average Length)、标准差的平方(Variance)和自由语素度(Degree Of Morphemic Freedom)。下表中列出了各个属性的含义：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">属性</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">长度(Length)</td>
+<td style="text-align:center">chuck中各个词的长度之和</td>
+</tr>
+<tr>
+<td style="text-align:center">平均长度(Average Length)</td>
+<td style="text-align:center">chuck中各个词的长度求平均</td>
+</tr>
+<tr>
+<td style="text-align:center">标准差的平方(Variance)</td>
+<td style="text-align:center">chuck中各个词的长度求标准差</td>
+</tr>
+<tr>
+<td style="text-align:center">自由语素度(Degree Of Morphemic Freedom)</td>
+<td style="text-align:center">各单字词词频的对数之和</td>
+</tr>
+</tbody>
+</table>
+<p>可能看到上面的一些概念会觉得有些模糊，下面我们通过一个简单的列子加深理解。<br>其实chunk就是三个词为一组，在chunk确定之后，chunk的各种属性也就随之可以计算出来，比如”长春市长春药店”，我们可以得到很多chunk</p>
+<blockquote>
+<p>长春_市_长春<br> 长_春_市长<br> 长春_市长_春药<br> 长春市_长春_药店<br> ….</p>
+</blockquote>
+<p>词典分解出来的可能更多(假定这些词都在词典中)。上面列举的三个词为一组的就是一个chunk，一旦chunk确定之后chunk的各种属性也就可以随之计算出来。</p>
+<h2 id="2-2、四个规则"><a href="#2-2、四个规则" class="headerlink" title="2.2、四个规则"></a>2.2、四个规则</h2><p>消除歧义的规则有四个，使用中依次用这四个规则进行过滤，直到只有一种结果或者第四个规则使用完毕，4条消歧规则包括：</p>
+<ul>
+<li>规则1：取最大匹配的chunk (Rule 1: Maximum matching)</li>
+<li>规则2：取平均词长最大的chunk (Rule 2: Largest average word length)</li>
+<li>规则3：取词长标准差最小的chunk (Rule 3: Smallest variance of word lengths)</li>
+<li>规则4：取单字词自由语素度之和最大的chunk (Rule 4: Largest sum of degree of morphemic freedom of one-character words)</li>
+</ul>
+<p>接来下举例进行分析:</p>
+<ul>
+<li><p><strong>取最大匹配的chunk（Maximum matching (Chen &amp; Liu 1992)）</strong><br>有两种情况，分别对应于使用“simple”和“complex”的匹配方法。对“simple”匹配方法，选择长度最大的词，用在上文的例子中即选择“长春市”；<br>对“complex”匹配方法，选择“词组长度最大的”那个词组，然后选择这个词组的第一个词，作为切分出的第一个词,所以在上文提到的例子中我们选择的chunk为<br>“<strong>长春市_长春_药店</strong>”,切分出的词为“<strong>长春市</strong>”</p>
+<blockquote>
+<p>从以上的情况来看貌似simple和complex没啥区别，如果是对“<strong>北京大学城</strong>”进行分词的话，“simple”第一个词结果为“<strong>北京大学</strong>”，“complex”第一个词结果为”<strong>北京</strong>”，正确的分词结果为“<strong>北京 大学城</strong>”。</p>
+</blockquote>
+<p><font color="#0000dd"><strong>对于有超过一个词组满足这个条件的则应用下一个规则</strong>。</font><br></p>
+</li>
+<li><p><strong>取平均词长最大的chunk（Largest average word length (Chen &amp; Liu, 1992)）</strong><br>经过规则1过滤后，如果剩余的词组超过1个，那就选择平均词语长度最大的那个（平均词长＝词组总字数／词语数量）。比如：“李志博士兵”，经过以上规则过滤后，可能还剩下如下的chunk：</p>
+<blockquote>
+<p>李志博_士兵(5/2=2.5)<br>李志_博士_兵(5/3=1.67)</p>
+</blockquote>
+<p><font>依据此规则就可以确定“<strong>李志博_士兵</strong>”这个chunk，但是对于上述的“<strong>北京大学城</strong>”此条规则并未起作用。</font><br></p>
+</li>
+</ul>
+<ul>
+<li><strong>取词长标准差最小的chunk（Smallest variance of word lengths (Chen &amp; Liu, 1992)）</strong><br>由于词语长度的变化率可以由标准差反映，所以此处直接套用标准差公式即可。比如针对”<strong>研究生命起源</strong>“这个case,经过上面的规则过滤之后有:<blockquote>
+<p>研究_生命_起源 （标准差=sqrt(((2-2)^2+(2-2)^2+(2-2^2))/3)=0）<br>研究生_命_起源 （标准差=sqrt(((2-3)^2+(2-1)^2+(2-2)^2)/3)=0.8165）</p>
+</blockquote>
+<font>于是通过这一规则选择“<strong>研究_生命_起源</strong>”这个词组</font><br></li>
+</ul>
+<ul>
+<li><strong>取单字词自由语素度之和最大的chunk（Largest sum of degree of morphemic freedom of one-character words）</strong><br>这里的自由语素度可以用一个数学公式表达：log(frequency)，即词频的自然对数（这里log表示数学中的ln）。这个规则的意思是“计算词组中的所有单字词词频的自然对数，然后将得到的值相加，取总和最大的词组”。比如：<br>“设施和服务”，经过上面的规则过滤之后，这个会有如下几种组合<blockquote>
+<p>设施_和服_务<br>设施_和_服务</p>
+</blockquote>
+<font>利用最后一个规则 第一条中的“务”和第二条中的“和”，从直观看，显然是“和”的词频在日常场景下要高，这依赖一个词频字典和的词频决定了的分词。<br>假设“务”作为单字词时候的频率是30，“和”作为单字词时候的频率是100，对30和100取自然对数，然后取最大值者，所以取“和”字所在的词组，即“设施_和_服务”。<br></font><br>也许会问为什么要对“词频”取自然对数呢？可以这样理解，词组中单字词词频总和可能一样，但是实际的效果并不同，比如<br>A_BBB_C （单字词词频，A:3， C:7）<br>DD_E_F （单字词词频，E:5，F:5）<br>表示两个词组，A、C、E、F表示不同的单字词，如果不取自然对数，单纯就词频来计算，那么这两个词组是一样的（3+7=5+5），但实际上不同的词频范围所表示的效果也不同，所以这里取自然对数，以表区分（ln(3)+ln(7) &lt; ln(5)+ln(5)， 3.0445&lt;3.2189)。</li>
+</ul>
+<p>从上面的叙述来看MMseg算法是将一个句子尽可能长和尽可能均匀的切分，这与中文的语法习惯比较相符。同时，分词效果与词典的关系较大，尤其是词典中单字词的频率。“simple”只是用了上述的第一个规则，其实等同于向前最大匹配算法，“complex”以上的四个规则都是用了。实际使用中，一般都是使用complex的匹配方法＋四个规则过滤。在使用MMseg词典分词算法的时候尽量使用领域词典对该领域进行分词，如：计算机类词库、医疗词库、金融词库、旅游类词库等，这样效果会好很多。<br>总的来说MMseg是一个简单、快速、有效的分词方法。</p>
+<h1 id="3、算法拓展"><a href="#3、算法拓展" class="headerlink" title="3、算法拓展"></a>3、算法拓展</h1><p>上文基本上将MMseg算法的原理讲解了一遍，但是其实上述的规则并未消除掉所有的歧义，比如：“购买文学艺术作品”按照上述的“complex”模式进行分词可能经过四个规则过滤后还会剩余一下2个chunk:</p>
+<blockquote>
+<p>购买_文学_艺术作品<br> 购买_文学艺术_作品</p>
+</blockquote>
+<p><font>如果词典中有“文学艺术作品”,那么对于这个语句使用MMseg分词是没问题的。<br>那么如果词典中没有呢，至少我加载jieba分词的词典中是没有的，是使用该词典进行MMseg分词,经过四个规则过滤之后剩下以上两个chunk。那么如何对以上的两个chunk进行优选呢。受 <strong>规则4</strong> 的启发，我们是否在以上的规则基础之上加入 <strong>第五条规则</strong>：<br><strong>(5) 计算chunk自由语素度，取最大的那个chunk，即</strong><br>$$max(\sum_{i=0}^{N} log(freq_{w_i})),N=2$$<br>所以，针对上述例子中,如果使用jieba分词词典,各个词在词典中的信息为：购买(4275)、文学(6890)、艺术作品(3)、文学艺术(3)、作品(9248)<br>则有:</font></p>
+<p>$$\begin{split}<br>f(购买||文学||艺术作品){} &amp; =log(freq_{购买})+log(freq_{文学})+log(freq_{艺术作品}) \\<br>                    {} &amp; =log(4275)+log(6890)+log(3) \\<br>                    {} &amp; =18.397<br>\end{split}$$</p>
+<p>$$\begin{split}<br>f(购买||文学艺术||作品){} &amp; =log(freq_{购买})+log(freq_{文学艺术})+log(freq_{作品}) \\<br>                    {} &amp; =log(4275)+log(3)+log(9248) \\<br>                    {} &amp; =18.691<br>\end{split}$$<br><br>则按照规则5，则最后取“<strong>购买_文学艺术_作品</strong>”这个chunk，就解决了经过4个规则过滤之后的还剩多个chunk的情况。<br>当然，以上加的这条规则为个人的一个思路，因为在实际中确确实实遇到了这个问题。其实加规则的思路还有很多，比如：</p>
+<ul>
+<li>直接计算chunk的trigram的概率，因为chunk刚好是三个词组合，缺点是计算量大。</li>
+<li>依据chunk的第一个词的log(freq),取该值的最大那个chunk，因为chunk过滤完成之后也只是决定了当前的分词结果为哪个词。<br>其实以上思路的都是从算法规则上添加条件过滤，解决问题的方式还可以从词典入手，比如针对以上的例子加入“文学艺术作品”这个词汇。</li>
+</ul>
+<p>拓展中所涉及的内容都是个人的一个理解和遇到问题的一个思路，将其列举了出来，并不为MMseg论文中的内容。如果有不妥之处希望大家批评指正。</p>
+<h1 id="4、算法demo实现"><a href="#4、算法demo实现" class="headerlink" title="4、算法demo实现"></a>4、算法demo实现</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> unicode_literals</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> os, sys</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mmseg</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.MIN_FLOAT = <span class="number">-3.14e100</span></span><br><span class="line">        self.dic_file = <span class="string">"user_dic.json"</span></span><br><span class="line">        self.user_dic = json.load(open(self.dic_file, <span class="string">"r"</span>))</span><br><span class="line">        self.maxlenth = <span class="number">100</span>  <span class="comment"># 最大匹配长度</span></span><br><span class="line">        self.re_eng = re.compile(<span class="string">'[a-zA-Z0-9]'</span>, re.U)  <span class="comment"># 英文数字的正则</span></span><br><span class="line">        self.re_han_default = re.compile(<span class="string">"([\u4E00-\u9FD5a-zA-Z0-9+#&amp;\._]+)"</span>, re.U)  <span class="comment"># 汉字的正则</span></span><br><span class="line">        self.re_skip_default = re.compile(<span class="string">"(\r\n|\s)"</span>, re.U)  <span class="comment"># 符号的正则</span></span><br><span class="line">        self.re_han_cut_all = re.compile(<span class="string">"([\u4E00-\u9FD5]+)"</span>, re.U)</span><br><span class="line">        self.re_skip_cut_all = re.compile(<span class="string">"[^a-zA-Z0-9+#\n]"</span>, re.U)</span><br><span class="line">        self.show_chunks_flag=<span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_DAG</span><span class="params">(self,sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        构建有向无环图,使用词典中的词进行最大匹配</span></span><br><span class="line"><span class="string">        :param sentence:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        dag = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> index, word <span class="keyword">in</span> enumerate(sentence):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(index, len(sentence)):</span><br><span class="line">                cur_word = <span class="string">u""</span>.join(sentence[index:j + <span class="number">1</span>])</span><br><span class="line">                <span class="keyword">if</span> cur_word <span class="keyword">in</span> self.user_dic:</span><br><span class="line">                    <span class="keyword">if</span> index <span class="keyword">in</span> dag:</span><br><span class="line">                        dag[index].append(j)</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        dag[index] = [j]</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="comment">#是否break决定着最大或者最小切分</span></span><br><span class="line">                    <span class="comment"># break</span></span><br><span class="line">                    <span class="keyword">if</span> (j - index) &gt;= self.maxlenth: <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> dag</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">maxLengthFilter</span><span class="params">(self,chunks)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        规则1：取最大长度匹配的chunk,即chunk中各词的长度之和取最大的chunk</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        chunks_dict = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks:</span><br><span class="line">            words_length = sum([(end - begin + <span class="number">1</span>) <span class="keyword">for</span> begin, end <span class="keyword">in</span> chunk])  <span class="comment"># 词的长度</span></span><br><span class="line">            <span class="keyword">if</span> words_length <span class="keyword">in</span> chunks_dict:</span><br><span class="line">                chunks_dict[words_length].append(chunk)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                chunks_dict[words_length] = [chunk]</span><br><span class="line">        chunks_dict_sorted = sorted(chunks_dict.items(), key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>], reverse=<span class="keyword">True</span>)</span><br><span class="line">        filted_chunks = chunks_dict_sorted[<span class="number">0</span>][<span class="number">1</span>]  <span class="comment"># 取最长的chunks</span></span><br><span class="line">        <span class="keyword">return</span> filted_chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">averageMaxLengthFilter</span><span class="params">(self,chunks)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        规则2：取平均长度最大的,即chunk中(词的长度/chunk的切分个数)</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        chunks_dict = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks:</span><br><span class="line">            chunk_size = float(len(chunk))  <span class="comment"># chunk的切分个数</span></span><br><span class="line">            words_length = float(sum([(end - begin + <span class="number">1</span>) <span class="keyword">for</span> begin, end <span class="keyword">in</span> chunk]))</span><br><span class="line">            average_length = float(words_length / chunk_size)</span><br><span class="line">            <span class="keyword">if</span> average_length <span class="keyword">in</span> chunks_dict:</span><br><span class="line">                chunks_dict[average_length].append(chunk)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                chunks_dict[average_length] = [chunk]</span><br><span class="line">        chunks_dict_sorted = sorted(chunks_dict.items(), key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>], reverse=<span class="keyword">True</span>)</span><br><span class="line">        filted_chunks = chunks_dict_sorted[<span class="number">0</span>][<span class="number">1</span>]  <span class="comment"># 取最长的chunks</span></span><br><span class="line">        <span class="keyword">return</span> filted_chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">standardDeviationFilter</span><span class="params">(self,chunks)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        规则3:取标准差平方最小的</span></span><br><span class="line"><span class="string">        标准差平方:[(x1-x)^2+(x2-x)^2 + ...+(xn-x)^2]/n ,其中x为平均值</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        chunks_dict = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks:</span><br><span class="line">            chunk_size = float(len(chunk))  <span class="comment"># chunk的切分个数</span></span><br><span class="line">            average_words_size = float(sum([(end - begin + <span class="number">1</span>) <span class="keyword">for</span> begin, end <span class="keyword">in</span> chunk]) / chunk_size)</span><br><span class="line">            chunk_sdq = float(<span class="number">0</span>)  <span class="comment"># chunk的标准差平方</span></span><br><span class="line">            <span class="keyword">for</span> (begin, end) <span class="keyword">in</span> chunk:</span><br><span class="line">                cur_size = float(end - begin + <span class="number">1</span>)</span><br><span class="line">                chunk_sdq += float((cur_size - average_words_size) ** <span class="number">2</span>)</span><br><span class="line">            chunk_sdq = float(chunk_sdq / chunk_size)</span><br><span class="line">            <span class="keyword">if</span> chunk_sdq <span class="keyword">in</span> chunks_dict:</span><br><span class="line">                chunks_dict[chunk_sdq].append(chunk)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                chunks_dict[chunk_sdq] = [chunk]</span><br><span class="line">        chunks_dict_sorted = sorted(chunks_dict.items(), key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>], reverse=<span class="keyword">False</span>)</span><br><span class="line">        filted_chunks = chunks_dict_sorted[<span class="number">0</span>][<span class="number">1</span>]  <span class="comment"># 取最长的chunks</span></span><br><span class="line">        <span class="keyword">return</span> filted_chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">logFreqFilterSingle</span><span class="params">(self,chunks,sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        规则4:取单字自由度之和最大的chunk</span></span><br><span class="line"><span class="string">        自由度：log(frequency)，即词频取自然对数</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        chunks_dict = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks:</span><br><span class="line">            log_freq = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> (begin,end) <span class="keyword">in</span> chunk:</span><br><span class="line">                <span class="keyword">if</span> begin==end:</span><br><span class="line">                    log_freq += math.log(float(self.user_dic.get(sentence[begin:end+<span class="number">1</span>],<span class="number">1</span>)))</span><br><span class="line">            <span class="keyword">if</span> log_freq <span class="keyword">in</span> chunks_dict:</span><br><span class="line">                chunks_dict[log_freq].append(chunk)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                chunks_dict[log_freq] = [chunk]</span><br><span class="line">        chunks_dict_sorted = sorted(chunks_dict.items(), key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>], reverse=<span class="keyword">True</span>)</span><br><span class="line">        filted_chunks = chunks_dict_sorted[<span class="number">0</span>][<span class="number">1</span>]  <span class="comment"># 取最长的chunks</span></span><br><span class="line">        <span class="keyword">return</span> filted_chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">logFreqFilterMutiWord</span><span class="params">(self, chunks, sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        规则5:取非单字的词语自由度之和最大的chunk</span></span><br><span class="line"><span class="string">        自由度：log(frequency)，即词频取自然对数</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        chunks_dict = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks:</span><br><span class="line">            log_freq = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> (begin, end) <span class="keyword">in</span> chunk:</span><br><span class="line">                <span class="keyword">if</span> begin != end:</span><br><span class="line">                    log_freq += math.log(float(self.user_dic.get(sentence[begin:end + <span class="number">1</span>], <span class="number">1</span>)))</span><br><span class="line">            <span class="keyword">if</span> log_freq <span class="keyword">in</span> chunks_dict:</span><br><span class="line">                chunks_dict[log_freq].append(chunk)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                chunks_dict[log_freq] = [chunk]</span><br><span class="line">        chunks_dict_sorted = sorted(chunks_dict.items(), key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>], reverse=<span class="keyword">True</span>)</span><br><span class="line">        filted_chunks = chunks_dict_sorted[<span class="number">0</span>][<span class="number">1</span>]  <span class="comment"># 取最长的chunks</span></span><br><span class="line">        <span class="keyword">return</span> filted_chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">chunksFilter</span><span class="params">(self,chunks,sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        过滤规则</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :param sentence:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> len(chunks) == <span class="number">1</span>: <span class="keyword">return</span> chunks</span><br><span class="line">        <span class="comment"># 1、取words长度之后最大的chunks</span></span><br><span class="line">        new_chunks = self.maxLengthFilter(chunks)</span><br><span class="line">        <span class="keyword">if</span> len(new_chunks) == <span class="number">1</span>: <span class="keyword">return</span> new_chunks</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 2、取平均word长度最大的chunks</span></span><br><span class="line">        new_chunks = self.averageMaxLengthFilter(new_chunks)</span><br><span class="line">        <span class="keyword">if</span> len(new_chunks) == <span class="number">1</span>: <span class="keyword">return</span> new_chunks</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 3、取平均方差最小的chunks</span></span><br><span class="line">        new_chunks = self.standardDeviationFilter(new_chunks)</span><br><span class="line">        <span class="keyword">if</span> len(new_chunks) == <span class="number">1</span>: <span class="keyword">return</span> new_chunks</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 4、取单字自由度组合最大的chunk</span></span><br><span class="line">        new_chunks = self.logFreqFilterSingle(new_chunks,sentence)</span><br><span class="line">        <span class="keyword">if</span> len(new_chunks) == <span class="number">1</span>:<span class="keyword">return</span> new_chunks</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 5、取非单字的所有词的组合自由语素之和最大的</span></span><br><span class="line">        new_chunks = self.logFreqFilterMutiWord(new_chunks, sentence)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> len(new_chunks) != <span class="number">1</span>:</span><br><span class="line">            print(sentence,<span class="string">"====="</span>)</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">"chunk划分最终的结果不唯一"</span>)</span><br><span class="line">        <span class="keyword">return</span> new_chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_chunks</span><span class="params">(self,DAG, begin_index, text_length,sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        给出所有的词和开始的位置,拿到所有的chunk</span></span><br><span class="line"><span class="string">        :param DAG:一句话的在字典中的最大匹配的位置</span></span><br><span class="line"><span class="string">        :param begin_index:从sentence中的某个起始位置开始构建chunk</span></span><br><span class="line"><span class="string">        :param text_length:文本的最大长度</span></span><br><span class="line"><span class="string">        :return:返回该位置生成的三个chunk组成chunks的所有组合</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        chunks = []</span><br><span class="line">        chunk = []</span><br><span class="line">        <span class="keyword">if</span> begin_index &gt; text_length:</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">"begin index out of sentcen length!!!"</span>)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> DAG.get(begin_index, [begin_index]):  <span class="comment"># 有的话就是词词典中的匹配，否则就是单字本身</span></span><br><span class="line">            <span class="keyword">if</span> (i + <span class="number">1</span>) &gt; text_length - <span class="number">1</span>:  <span class="comment"># 到了sentence的结尾,后面无可用字或词</span></span><br><span class="line">                chunks.append([(begin_index, i)])</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> DAG.get(i + <span class="number">1</span>, [i + <span class="number">1</span>]):</span><br><span class="line">                <span class="keyword">if</span> (j + <span class="number">1</span>) &gt; text_length - <span class="number">1</span>:  <span class="comment"># 到了sentence的结尾,后面无可用字或词</span></span><br><span class="line">                    chunks.append([(begin_index, i), (i + <span class="number">1</span>, j)])</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">for</span> k <span class="keyword">in</span> DAG.get(j + <span class="number">1</span>, [j + <span class="number">1</span>]):</span><br><span class="line">                    chunk.append((begin_index, i))</span><br><span class="line">                    chunk.append((i + <span class="number">1</span>, j))</span><br><span class="line">                    chunk.append((j + <span class="number">1</span>, k))</span><br><span class="line">                    chunks.append(chunk)</span><br><span class="line">                    chunk = []</span><br><span class="line">        chunks = self.chunksFilter(chunks,sentence)</span><br><span class="line">        <span class="keyword">if</span> self.show_chunks_flag:</span><br><span class="line">            self.show_chunks(sentence,chunks)</span><br><span class="line">        <span class="keyword">return</span> chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">cut_DAG</span><span class="params">(self,sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        对于划分后的句子，进行切分然后分词</span></span><br><span class="line"><span class="string">        :param sentence:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self.sentence = sentence</span><br><span class="line">        text_length = len(sentence)</span><br><span class="line">        DAG = self.get_DAG(sentence)</span><br><span class="line">        index = <span class="number">0</span></span><br><span class="line">        buff = <span class="string">""</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            <span class="keyword">if</span> index&gt;text_length<span class="number">-1</span>:<span class="keyword">break</span></span><br><span class="line">            chunks = self.get_chunks(DAG,index,text_length,sentence)</span><br><span class="line">            begin,end = chunks[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">            word = <span class="string">""</span>.join(sentence[begin:end+<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">if</span> self.re_eng.match(word) <span class="keyword">and</span> len(word)==<span class="number">1</span>: <span class="comment">#对英文和数字进行处理</span></span><br><span class="line">                buff += word</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span> buff:</span><br><span class="line">                    <span class="keyword">yield</span> buff</span><br><span class="line">                    buff = <span class="string">""</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">yield</span> word</span><br><span class="line">            index = end+<span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> buff: <span class="comment">#末尾为数字或英文</span></span><br><span class="line">            <span class="keyword">yield</span> buff</span><br><span class="line">            buff = <span class="string">""</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">cut_re</span><span class="params">(self,sentence,cut_all = False)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        文本的分词切分</span></span><br><span class="line"><span class="string">        :param sentence:输入进来的文本</span></span><br><span class="line"><span class="string">        :param cut_all: 全切分(暂不支持)</span></span><br><span class="line"><span class="string">        :return:返回切分的词</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> cut_all:</span><br><span class="line">            re_han = self.re_han_cut_all</span><br><span class="line">            re_skip = self.re_skip_cut_all</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            re_han = self.re_han_default</span><br><span class="line">            re_skip = self.re_skip_default</span><br><span class="line">        blocks = self.re_han_default.split(sentence)</span><br><span class="line">        <span class="keyword">for</span> blk <span class="keyword">in</span> blocks: <span class="comment">#按照符号划分然后在针对划分后的分词</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> blk:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> re_han.match(blk):</span><br><span class="line">                <span class="keyword">for</span> word <span class="keyword">in</span> self.cut_DAG(blk):</span><br><span class="line">                    <span class="keyword">yield</span> word</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                tmp = re_skip.split(blk)</span><br><span class="line">                <span class="keyword">for</span> x <span class="keyword">in</span> tmp:</span><br><span class="line">                    <span class="keyword">if</span> re_skip.match(x):</span><br><span class="line">                        <span class="keyword">yield</span> x</span><br><span class="line">                    <span class="keyword">elif</span> <span class="keyword">not</span> cut_all:</span><br><span class="line">                        <span class="keyword">for</span> xx <span class="keyword">in</span> x:</span><br><span class="line">                            <span class="keyword">yield</span> xx</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        <span class="keyword">yield</span> x</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">cut</span><span class="params">(self,sentence)</span>:</span></span><br><span class="line"></span><br><span class="line">        sentence = self.strdecode(sentence)</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> self.cut_DAG(sentence):</span><br><span class="line">            <span class="keyword">yield</span> word</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">show_chunks</span><span class="params">(self,sentence, chunks,word=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        打印使用，调试手段</span></span><br><span class="line"><span class="string">        :param sentence:</span></span><br><span class="line"><span class="string">        :param chunks:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks:</span><br><span class="line">            chunk_words = []</span><br><span class="line">            <span class="keyword">for</span> (begin, end) <span class="keyword">in</span> chunk:</span><br><span class="line">                word = <span class="string">""</span>.join(sentence[begin:end + <span class="number">1</span>])</span><br><span class="line">                chunk_words.append(word)</span><br><span class="line">            print(<span class="string">"\t"</span>.join(chunk_words))</span><br><span class="line">            <span class="keyword">if</span> word!=<span class="keyword">None</span>:print(word)</span><br><span class="line">        print(<span class="string">"======================="</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">strdecode</span><span class="params">(self,sentence,text_type=str)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> isinstance(sentence, text_type):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                sentence = sentence.decode(<span class="string">'utf-8'</span>)</span><br><span class="line">            <span class="keyword">except</span> UnicodeDecodeError:</span><br><span class="line">                sentence = sentence.decode(<span class="string">'gbk'</span>, <span class="string">'ignore'</span>)</span><br><span class="line">        <span class="keyword">return</span> sentence</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_one</span><span class="params">()</span>:</span></span><br><span class="line">    mmseg = Mmseg()</span><br><span class="line">    mmseg.show_chunks_flag = <span class="keyword">False</span></span><br><span class="line">    mmseg.user_dic[<span class="string">u"交易性金融资产"</span>] = <span class="number">1</span></span><br><span class="line">    mmseg.user_dic[<span class="string">u"融通基金a"</span>] = <span class="number">1</span></span><br><span class="line">    mmseg.user_dic[<span class="string">u"出了"</span>] = <span class="number">100</span></span><br><span class="line">    print(mmseg.user_dic[<span class="string">u"中出"</span>])</span><br><span class="line">    query = <span class="string">"持股基金包含融通基金a，银行存款，交易性金融资产"</span></span><br><span class="line">    <span class="comment"># print(json.dumps(re.split("[, ， 。 ；]",query),ensure_ascii=False))</span></span><br><span class="line">    <span class="comment"># print(json.dumps(re.findall("[, ， 。 ；]", query), ensure_ascii=False))</span></span><br><span class="line">    print(<span class="string">"/"</span>.join(list(mmseg.cut(query))))</span><br><span class="line">    query = <span class="string">"购买文学艺术作品"</span></span><br><span class="line">    print(<span class="string">"/"</span>.join(list(mmseg.cut(query))))</span><br><span class="line">    query = <span class="string">"吉林省长春市长春药店,我来到了北京大学城,看到了北京大学生的技术和服务很厉害。工信处女干事每月经过楼下都要亲口交代，2015年5月机器需要维护。我们中出了一个汉奸。"</span></span><br><span class="line">    print(<span class="string">"/"</span>.join(list(mmseg.cut(query))))</span><br><span class="line">    mmseg.user_dic[<span class="string">u"李志博"</span>] = <span class="number">100</span></span><br><span class="line">    mmseg.user_dic[<span class="string">u"李志"</span>] = <span class="number">100</span></span><br><span class="line">    query = <span class="string">"董事长包含李志博士"</span></span><br><span class="line">    print(<span class="string">"/"</span>.join(list(mmseg.cut(query))))</span><br><span class="line">    mmseg.user_dic[<span class="string">u"市销率(ps)"</span>] = <span class="number">100</span></span><br><span class="line">    print(<span class="string">"/"</span>.join(list(mmseg.cut(<span class="string">"市销率(ps)"</span>))))</span><br><span class="line">    print(<span class="string">"/"</span>.join(list(mmseg.cut(<span class="string">"吉林省长春市长春药店"</span>))))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    test_one()</span><br></pre></td></tr></table></figure>
+<p>上述代码中将jieba分词的词典中的word和freq转换为{word:freq}的json文件，则运行程序的结果为:</p>
+<blockquote>
+<p>3<br>持股/基金/包含/融通基金a/，/银行存款/，/交易性金融资产<br>购买/文学艺术/作品<br>吉林省/长春市/长春/药店/,/我/来到/了/北京/大学城/,/看到/了/北京/大学生/的/技术/和/服务/很/厉害/。/工信处/女干事/每月/经过/楼下/都/要/亲口/交代/，/2015/年/5/月/机器/需要/维护/。/我们/中出/了/一个/汉奸/。<br>董事长/包含/李志/博士<br>市销率(ps)<br>吉林省/长春市/长春/药店</p>
+</blockquote>
+<p>算法原理很简单，以上代码为python的一个简单实现。如果想做成java版本话，这个可以作为一个简单的参照!</p>
+<h1 id="5、总结"><a href="#5、总结" class="headerlink" title="5、总结"></a>5、总结</h1><ul>
+<li><p>优点：<br>MMseg是一个简单快速有效的词典分词算法，无需训练语料，算法效果来说很不错。<br>有些句子在使用jieba的词典的情况下比jieba的分词结果都要好。比如:“我来到了北京大学城”，使用jieba分词和mmseg分词的结果为：</p>
+<blockquote>
+<p>我/来到/了/北京/大学城(MMseg结果)<br>我/来到/了/北京大学/城(jieba结果)</p>
+</blockquote>
+</li>
+<li><p>缺点：<br>有着词典分词的缺点就是对于未登录词无法解决。<br>其实也存在也使用词典分词也无法解决的反例，比如：<font color="#dd0000">把手抬起来</font>，正确的分词是<font color="#dd0000">把_手_抬起_来</font>,但经过本算法的规则过滤为<font color="#dd0000">把手_抬起_来</font>。</p>
+</li>
+</ul>
+<p>对于未登录词可以使用模型(HMM、CRF、BI-LSTM)来解决。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/分词/" rel="tag"><i class="fa fa-tag"></i> 分词</a>
+          
+            <a href="/tags/词典分词/" rel="tag"><i class="fa fa-tag"></i> 词典分词</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/机器学习/EM算法/" rel="next" title="EM算法">
+                <i class="fa fa-chevron-left"></i> EM算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/NLP/马尔可夫模型-HMM/" rel="prev" title="马尔可夫模型-HMM">
+                马尔可夫模型-HMM <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.png"
+                alt="马野" />
+            
+              <p class="site-author-name" itemprop="name">马野</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="xiachiucas@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-E-Mail"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                网站链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.arxiv-sanity.com/top" title="Arixv热搜版" target="_blank">Arixv热搜版</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://paper.yanxishe.com/" title="AI研习社" target="_blank">AI研习社</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xpqiu" title="Fudan NLP" target="_blank">Fudan NLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/thunlp" title="THUNLP" target="_blank">THUNLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.bookstack.cn/read/huaxiaozhuan-ai/README.md" title="《AI算法工程师手册》" target="_blank">《AI算法工程师手册》</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、简介"><span class="nav-text">1、简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、MMseg分词算法原理"><span class="nav-text">2、MMseg分词算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1、基本含义"><span class="nav-text">2.1、基本含义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2、四个规则"><span class="nav-text">2.2、四个规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、算法拓展"><span class="nav-text">3、算法拓展</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、算法demo实现"><span class="nav-text">4、算法demo实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、总结"><span class="nav-text">5、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">马野</span>
+
+  
+</div>
+
+
+<div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+<div>
+<p >Hosted by <a target="_blank" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'TjWnQkO6exbqDEXcjR0WpplS-gzGzoHsz',
+        appKey: 'NBIbiOSvsE8jCwyazUpjhoOn',
+        placeholder: '欢迎大家来评论',
+        avatar:'mp',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

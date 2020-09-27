@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="深度学习,BERT," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、背景最近几年自然语言处理领域取得了飞速的发展，基本几项重要的成果都集中在了预训练上包括18年火爆一时的BERT，而后续发表的XLNet，近期发布的RoBERTa都是以更好的预训练为目的的。 什么是BERT？BERT是基于Transformer Encoder来构建的一种预训练模型，在BERT的论文中称之为Masked Lanauge Model(MLM),严格意义上而言BERT并不属于语言模型">
+<meta name="keywords" content="深度学习,BERT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BERT算法详解及其应用">
+<meta property="og:url" content="http://www.mayexia.com/NLP/BERT算法详解及其应用/index.html">
+<meta property="og:site_name" content="梵  高  先  生">
+<meta property="og:description" content="一、背景最近几年自然语言处理领域取得了飞速的发展，基本几项重要的成果都集中在了预训练上包括18年火爆一时的BERT，而后续发表的XLNet，近期发布的RoBERTa都是以更好的预训练为目的的。 什么是BERT？BERT是基于Transformer Encoder来构建的一种预训练模型，在BERT的论文中称之为Masked Lanauge Model(MLM),严格意义上而言BERT并不属于语言模型">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.mayexia.com/imgs/Attention机制和Transformer框架详解/transformer_02.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/BERT算法详解及其应用/01.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/BERT算法详解及其应用/02.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/BERT算法详解及其应用/03.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/BERT算法详解及其应用/04.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/BERT算法详解及其应用/05.png">
+<meta property="og:updated_time" content="2020-09-27T06:53:05.340Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BERT算法详解及其应用">
+<meta name="twitter:description" content="一、背景最近几年自然语言处理领域取得了飞速的发展，基本几项重要的成果都集中在了预训练上包括18年火爆一时的BERT，而后续发表的XLNet，近期发布的RoBERTa都是以更好的预训练为目的的。 什么是BERT？BERT是基于Transformer Encoder来构建的一种预训练模型，在BERT的论文中称之为Masked Lanauge Model(MLM),严格意义上而言BERT并不属于语言模型">
+<meta name="twitter:image" content="http://www.mayexia.com/imgs/Attention机制和Transformer框架详解/transformer_02.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mayexia.com/NLP/BERT算法详解及其应用/"/>
+
+
+
+
+
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+  <title>BERT算法详解及其应用 | 梵  高  先  生</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梵  高  先  生</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.mayexia.com/NLP/BERT算法详解及其应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="马野">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梵  高  先  生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">BERT算法详解及其应用</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-12T16:09:23+08:00">
+                2020-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/NLP/BERT算法详解及其应用/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/NLP/BERT算法详解及其应用/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>最近几年自然语言处理领域取得了飞速的发展，基本几项重要的成果都集中在了预训练上包括18年火爆一时的BERT，而后续发表的XLNet，近期发布的RoBERTa都是以更好的预训练为目的的。</p>
+<p>什么是BERT？BERT是基于Transformer Encoder来构建的一种预训练模型，在BERT的论文中称之为Masked Lanauge Model(MLM),严格意义上而言BERT并不属于语言模型，因为它并未按照语言模型的方式来进行训练，其实就是随机的将一些单词通过MASK的标签来替换，然后去猜测被MASK的单词，这整个过程就是基于DAE(Denoising Autoencoder)框架做的。对于Transformer的介绍我之前的<a href="/NLP/Attention机制和Transformer框架详解">文章</a>有介绍过。</p>
+<p>BERT的本质上是通过在海量的语料的基础上运行自监督学习方法为单词学习一个好的特征表示，所谓自监督学习是指在没有人工标注的数据上运行的监督学习。在以后特定的NLP任务中，我们可以直接使用BERT的特征表示作为该任务的词嵌入特征。所以BERT提供的是一个供其它任务迁移学习的模型，该模型可以根据任务微调或者固定之后作为特征提取器。<a href="https://github.com/google-research/bert" target="_blank" rel="noopener">BERT的源码和模型</a>10月31号已经在Github上开源，简体中文和多语言模型也于11月3号开源。BERT有两种主要训练好的模型，分别是BERT-Small和BERT-Large， 其中BERT-Large使用了12层的Encoder结构。 整个的模型具有非常多的参数。</p>
+<p>在bert之前，将预训练的embedding应用到下游任务的方式大致可以分为2种，一种是feature-based，例如ELMo这种将经过预训练的embedding作为特征引入到下游任务的网络中；一种是fine-tuning，例如GPT这种将下游任务接到预训练模型上，然后一起训练。然而这2种方式都会面临同一个问题，就是无法直接学习到上下文信息，像ELMo只是分别学习上文和下文信息，然后concat起来表示上下文信息，抑或是GPT只能学习上文信息。因此，作者提出一种基于transformer encoder的预训练模型，可以直接学习到上下文信息，叫做bert。bert使用了12个transformer encoder block，在13G的数据上进行了预训练，可谓是nlp领域大力出奇迹的代表。</p>
+<p>论文地址:<a href="https://arxiv.org/pdf/1810.04805.pdf" target="_blank" rel="noopener">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</a></p>
+<h1 id="二、BERT详解"><a href="#二、BERT详解" class="headerlink" title="二、BERT详解"></a>二、BERT详解</h1><p>2017年之前,语言模型都是通过rnn，lstm来建模，这样虽然可以学习上下文之间的关系，但是无法并行化，给模型的训练和推理带来了困难，因此论文提出了一种完全基于attention来对语言建模的模型，叫做transformer。transformer摆脱了nlp任务对于rnn，lstm的依赖，使用了self-attention的方式对上下文进行建模，提高了训练和推理的速度，transformer也是后续更强大的nlp预训练模型的基础,因此Bert网络结构也是基于Transformer结构发展而来的。</p>
+<p>BERT的全称是Bidirectional Encoder Representation from Transformers，即双向Transformer的Encoder，因为decoder是不能获要预测的信息的。模型的主要创新点都在pre-train方法上，即用了Masked LM和Next Sentence Prediction两种方法分别捕捉词语和句子级别的representation。接下来我们先对BERT的核心结构Transformer进行介绍。</p>
+<h2 id="2-1-Transormer结构"><a href="#2-1-Transormer结构" class="headerlink" title="2.1 Transormer结构"></a>2.1 Transormer结构</h2><p>Transormer是一个encoder-decoder网络，由若干个编码器和解码器堆叠形成，如下图所示:<br><img src="/imgs/Attention机制和Transformer框架详解/transformer_02.png" alt="transformer_02.png"><br>我们将encoder和decoder展开来看的更细致后，就如下所示：<br><img src="/imgs/BERT算法详解及其应用/01.png" alt="01.png"><br>接下来我们针对以上结构进行逐个解释:</p>
+<ul>
+<li><1> Inputs是经过padding的输入数据，大小是[batch size, max seq length]。</1></li>
+<li><2> 初始化embedding matrix，通过embedding lookup将Inputs映射成token embedding，大小是[batch size, max seq length, embedding size]，然后乘以embedding size的开方。</2></li>
+<li><3> 通过sin和cos函数创建positional encoding，表示一个token的绝对位置信息，并加入到token embedding中，然后dropout。</3></li>
+<li><p><4> multi-head attention</4></p>
+<blockquote>
+<ul>
+<li>&lt;4.1&gt; 输入token embedding，通过Dense生成Q，K，V，大小是[batch size, max seq length, embedding size]，然后按第2维split成num heads份并按第0维concat，生成新的Q，K，V，大小是[num heads*batch size, max seq length, embedding size/num heads]，完成multi-head的操作。</li>
+<li>&lt;4.2&gt; 将K的第1维和第2维进行转置，然后Q和转置后的K的进行点积，结果的大小是[num heads*batch size, max seq length, max seq length]。</li>
+<li>&lt;4.3&gt; 将&lt;4.2&gt;的结果除以hidden size的开方(在transformer中，hidden size=embedding size)，完成scale的操作。</li>
+<li>&lt;4.4&gt; 将&lt;4.3&gt;中padding的点积结果置成一个很小的数(-2^32+1)，完成mask操作，后续softmax对padding的结果就可以忽略不计了。</li>
+<li>&lt;4.5&gt; 将经过mask的结果进行softmax操作。</li>
+<li>&lt;4.6&gt; 将softmax的结果和V进行点积，得到attention的结果，大小是[num heads*batch size, max seq length, hidden size/num heads]。</li>
+<li>&lt;4.7&gt; 将attention的结果按第0维split成num heads份并按第2维concat，生成multi-head attention的结果，大小是[batch size, max seq length, hidden size]。Figure 2上concat之后还有一个linear的操作，但是代码里并没有。</li>
+</ul>
+</blockquote>
+</li>
+<li><p><5> 将token embedding和multi-head attention的结果相加，并进行Layer Normalization。</5></p>
+</li>
+<li><6> 将<5>的结果经过2层Dense，其中第1层的activation=relu，第2层activation=None。</5></6></li>
+<li><7> 功能和<5>一样。</5></7></li>
+<li><8> Outputs是经过padding的输出数据，与Inputs不同的是，Outputs的需要在序列前面加上一个起始符号”&lt;s>”，用来表示序列生成的开始，而Inputs不需要。</8></li>
+<li><9> 功能和<2>一样。</2></9></li>
+<li><10> 功能和<3>一样。</3></10></li>
+<li><11> 功能和<4>类似，唯一不同的一点在于mask，<11>中的mask不仅将padding的点积结果置成一个很小的数，而且将当前token与之后的token的点积结果也置成一个很小的数。</11></4></11></li>
+<li><12> 功能和<5>一样。</5></12></li>
+<li><13> 功能和<4>类似，唯一不同的一点在于Q，K，V的输入，<13>的Q的输入来自于Outputs 的token embedding，<13>的K，V来自于<7>的结果。</7></13></13></4></13></li>
+<li><14> 功能和<5>一样。</5></14></li>
+<li><15> 功能和<6>一样。</6></15></li>
+<li><16> 功能和<7>一样，结果的大小是[batch size, max seq length, hidden size]。</7></16></li>
+<li><17> 将<16>的结果的后2维和embedding matrix的转置进行点积，生成的结果的大小是[batch size, max seq length, vocab size]。</16></17></li>
+<li><18> 将<17>的结果进行softmax操作，生成的结果就表示当前时刻预测的下一个token在vocab上的概率分布。</17></18></li>
+<li><19> 计算<18>得到的下一个token在vocab上的概率分布和真实的下一个token的one-hot形式的cross entropy，然后sum非padding的token的cross entropy当作loss，利用adam进行训练。</18></19></li>
+</ul>
+<h2 id="2-2-Transormer的技术细节"><a href="#2-2-Transormer的技术细节" class="headerlink" title="2.2 Transormer的技术细节"></a>2.2 Transormer的技术细节</h2><p>transformer中的self-attention是从普通的点积attention中演化出来的，但是对于上述结构我们还有很多细节可以探讨。</p>
+<p><strong>1.为什么<2>要乘以embedding size的开方？</2></strong><br>论文并没有讲为什么这么做，看了代码，猜测是因为embedding matrix的初始化方式是xavier init，这种方式的方差是1/embedding size，因此乘以embedding size的开方使得embedding matrix的方差是1，在这个scale下可能更有利于embedding matrix的收敛。</p>
+<p><strong>2.为什么inputs embedding要加入positional encoding？</strong><br>因为self-attention是位置无关的，无论句子的顺序是什么样的，通过self-attention计算的token的hidden embedding都是一样的，这显然不符合人类的思维。因此要有一个办法能够在模型中表达出一个token的位置信息，transformer使用了固定的positional encoding来表示token在句子中的绝对位置信息。positional encoding的公式如下:<br>$$<br>PE(pos,2i)=sin(\frac{pos}{10000^{\frac{2i}{d_{model}}}})\\<br>PE(pos,2i+1)=cos(\frac{pos}{10000^{\frac{2i}{d_{model}}}})<br>$$<br>至于positional encoding为什么能表示位置信息，可以看如何理解Transformer论文中的positional encoding，和三角函数有什么关系？</p>
+<p><strong>3.为什么&lt;4.2&gt;的结果要scale？</strong><br>以数组为例，2个长度是len，均值是0，方差是1的数组点积会生成长度是len，均值是0，方差是len的数组。而方差变大会导致softmax的输入推向正无穷或负无穷，这时的梯度会无限趋近于0，不利于训练的收敛。因此除以len的开方，可以是数组的方差重新回归到1，有利于训练的收敛。</p>
+<p><strong>4.为什么<5>要将multi-head attention的输入和输出相加？</5></strong><br>类似于resnet中的残差学习单元，有ensemble的思想在里面，解决网络退化问题。</p>
+<p><strong>5. 为什么attention需要multi-head，一个大head行不行？</strong><br>multi-head相当于把一个大空间划分成多个互斥的小空间，然后在小空间内分别计算attention，虽然单个小空间的attention计算结果没有大空间计算得精确，但是多个小空间并行然后concat有助于网络捕捉到更丰富的信息，类比cnn网络中的channel。</p>
+<p><strong>6.为什么multi-head attention后面要加一个ffn？</strong><br>类比cnn网络中，cnn block和fc交替连接，效果更好。相比于单独的multi-head attention，在后面加一个ffn，可以提高整个block的非线性变换的能力。</p>
+<p><strong>7.为什么<11>要mask当前时刻的token与后续token的点积结果？</11></strong><br>自然语言生成(例如机器翻译，文本摘要)是auto-regressive的，在推理的时候只能依据之前的token生成当前时刻的token，正因为生成当前时刻的token的时候并不知道后续的token长什么样，所以为了保持训练和推理的一致性，训练的时候也不能利用后续的token来生成当前时刻的token。这种方式也符合人类在自然语言生成中的思维方式。</p>
+<p>如果想更多的了解Attention和Tranformer的知识，可以参考这篇<a href="/NLP/Attention机制和Transformer框架详解">《Attention机制和Transformer框架详解》</a>博客。</p>
+<h1 id="三、BERT应用"><a href="#三、BERT应用" class="headerlink" title="三、BERT应用"></a>三、BERT应用</h1><p>由于模型的构成元素Transformer已经解析过，就不多说了，BERT模型的结构如下图最左：<br><img src="/imgs/BERT算法详解及其应用/02.png" alt="02.png"><br>BERT对比这两个算法的优点是只有BERT表征会基于所有层中的左右两侧语境。BERT能做到这一点得益于Transformer中Attention机制将任意位置两个单词的距离转换成了1。</p>
+<p>对比OpenAI GPT(Generative pre-trained transformer)，BERT是双向的Transformer block连接；就像单向rnn和双向rnn的区别，直觉上来讲效果会好一些。</p>
+<p>对比ELMo，虽然都是“双向”，但目标函数其实是不同的。ELMo是分别以$P(w_{i}|w_{1},….,w_{i-1})$和$P(w_{i}|w_{i+1},….,w_{n})$作为目标函数，独立训练处两个representation然后拼接，而BERT则是以$P(w_{i}|w_{1},….,w_{i-1},w_{i+1},….,w_{n})$作为目标函数训练LM。</p>
+<p>BERT提供了简单和复杂两个模型，对应的超参数分别如下：</p>
+<ul>
+<li>$BERT_{BASE}$:L=12，H=768，A=12，参数总量110M</li>
+<li>$BERT_{LARGE}$:L=24，H=1024，A=16，参数总量340M</li>
+</ul>
+<p>在BERT的应用中主要分为预训练(Pre-training)和微调(Fine-Tuning)两部分。如下图所示<br><img src="/imgs/BERT算法详解及其应用/03.png" alt="03.png"><br>预训练能够很优雅的通过无监督的方式将数据中的语言知识引入进来，微调就是将预训练的模型结合自身业务和模型进行调整，调整后的模型与自身目标更相关。</p>
+<h2 id="3-1-BERT的Embedding"><a href="#3-1-BERT的Embedding" class="headerlink" title="3.1 BERT的Embedding"></a>3.1 BERT的Embedding</h2><p>这里的Embedding由三种Embedding求和而成：<br><img src="/imgs/BERT算法详解及其应用/04.png" alt="04.png"></p>
+<ul>
+<li>Token Embeddings是词向量，第一个单词是CLS标志，可以用于之后的分类任务。</li>
+<li>Segment Embeddings用来区别两种句子，因为预训练不光做LM还要做以两个句子为输入的分类任务</li>
+<li>Position Embeddings和之前文章中的Transformer不一样，不是三角函数而是学习出来的</li>
+</ul>
+<p>上图中在输入部分是WordPiece,是指将单词划分成一组有限的公共子词单元，能在单词的有效性和字符的灵活性之间取得一个折中的平衡。例如上图中的示例中‘playing’被拆分成了‘play’和‘ing’。</p>
+<h2 id="3-2-BERT的预训练"><a href="#3-2-BERT的预训练" class="headerlink" title="3.2 BERT的预训练"></a>3.2 BERT的预训练</h2><p>BERT是一个多任务模型，它的任务是由两个自监督任务组成，即Masked LM和Next Sentence Prediction。</p>
+<h3 id="3-2-1-Task-1：-Masked-Language-Model"><a href="#3-2-1-Task-1：-Masked-Language-Model" class="headerlink" title="3.2.1 Task #1： Masked Language Model"></a>3.2.1 Task #1： Masked Language Model</h3><p>Masked Language Model（MLM）和核心思想取自Wilson Taylor在1953年发表的一篇论文《cloze procedure: A new tool for measuring readability》。所谓MLM是指在训练的时候随即从输入预料上mask掉一些单词，然后通过的上下文预测该单词，该任务非常像我们在中学时期经常做的完形填空。正如传统的语言模型算法和RNN匹配那样，MLM的这个性质和Transformer的结构是非常匹配的。</p>
+<p>在BERT的实验中，15%的WordPiece Token会被随机Mask掉。在训练模型时，一个句子会被多次喂到模型中用于参数学习，但是Google并没有在每次都mask掉这些单词，而是在确定要Mask掉的单词之后，80%的时候会直接替换为[Mask]，10%的时候将其替换为其它任意单词，10%的时候会保留原始Token。</p>
+<ul>
+<li>80%：my dog is hairy -&gt; my dog is [mask]</li>
+<li>10%：my dog is hairy -&gt; my dog is apple</li>
+<li>10%：my dog is hairy -&gt; my dog is hairy</li>
+</ul>
+<p>这么做的原因是如果句子中的某个Token100%都会被mask掉，那么在fine-tuning的时候模型就会有一些没有见过的单词。加入随机Token的原因是因为Transformer要保持对每个输入token的分布式表征，否则模型就会记住这个[mask]是token ’hairy‘。至于单词带来的负面影响，因为一个单词被随机替换掉的概率只有15%*10% =1.5%，这个负面影响其实是可以忽略不计的。<br>另外文章指出每次只预测15%的单词，因此模型收敛的比较慢。</p>
+<h3 id="3-2-2-Task-2-Next-Sentence-Prediction"><a href="#3-2-2-Task-2-Next-Sentence-Prediction" class="headerlink" title="3.2.2 Task #2: Next Sentence Prediction"></a>3.2.2 Task #2: Next Sentence Prediction</h3><p>Next Sentence Prediction（NSP）的任务是判断句子B是否是句子A的下文。如果是的话输出’IsNext‘，否则输出’NotNext‘。训练数据的生成方式是从平行语料中随机抽取的连续两句话，其中50%保留抽取的两句话，它们符合IsNext关系，另外50%的第二句话是随机从预料中提取的，它们的关系是NotNext的。这个关系保存在图4中的[CLS]符号中。</p>
+<h2 id="3-3-BERT的FineTuning"><a href="#3-3-BERT的FineTuning" class="headerlink" title="3.3 BERT的FineTuning"></a>3.3 BERT的FineTuning</h2><p>在海量单预料上训练完BERT之后，便可以将其应用到NLP的各个任务中了。对于NSP任务来说，其条件概率表示为$P=softmax(CW^{T})$，其中$C$是BERT输出中的[CLS]符号，$W$ 是可学习的权值矩阵。</p>
+<p>对于其它任务来说，我们也可以根据BERT的输出信息作出对应的预测。下图展示了BERT在11个不同任务中的模型，它们只需要在BERT的基础上再添加一个输出层便可以完成对特定任务的微调。这些任务类似于我们做过的文科试卷，其中有选择题，简答题等等。图5中其中Tok表示不同的Token，$E$表示嵌入向量，$T_{i}$表示第$i$个Token在经过BERT处理之后得到的特征向量。<br><img src="/imgs/BERT算法详解及其应用/05.png" alt="05.png"></p>
+<p>上图中(a)表示对句子分类任务:</p>
+<blockquote>
+<ul>
+<li>MNLI：给定一个前提 (Premise) ，根据这个前提去推断假设 (Hypothesis) 与前提的关系。该任务的关系分为三种，蕴含关系 (Entailment)、矛盾关系 (Contradiction) 以及中立关系 (Neutral)。所以这个问题本质上是一个分类问题，我们需要做的是去发掘前提和假设这两个句子对之间的交互信息。</li>
+<li>QQP：基于Quora，判断 Quora 上的两个问题句是否表示的是一样的意思。</li>
+<li>QNLI：用于判断文本是否包含问题的答案，类似于我们做阅读理解定位问题所在的段落。</li>
+<li>STS-B：预测两个句子的相似性，包括5个级别。</li>
+<li>MRPC：也是判断两个句子是否是等价的。</li>
+<li>RTE：类似于MNLI，但是只是对蕴含关系的二分类判断，而且数据集更小。</li>
+<li>SWAG：从四个句子中选择为可能为前句下文的那个。</li>
+</ul>
+</blockquote>
+<p>上图中(a)表示单个句子分类任务:</p>
+<blockquote>
+<ul>
+<li>SST-2：电影评价的情感分析。</li>
+<li>CoLA：句子语义判断，是否是可接受的（Acceptable）。</li>
+</ul>
+</blockquote>
+<p>对于GLUE数据集的分类任务（MNLI，QQP，QNLI，SST-B，MRPC，RTE，SST-2，CoLA），BERT的微调方法是根据[CLS]标志生成一组特征向量$C$ ，并通过一层全连接进行微调。损失函数根据任务类型自行设计，例如多分类的softmax或者二分类的sigmoid。</p>
+<p>SWAG的微调方法与GLUE数据集类似，只不过其输出是四个可能选项的softmax：<br>$$<br>P_{i}=\frac{e^{V C_{i}}}{\sum^{4}_{j=1}e^{V C_{i}}}<br>$$</p>
+<p>(c)问答任务</p>
+<ul>
+<li>SQuAD v1.1：给定一个句子（通常是一个问题）和一段描述文本，输出这个问题的答案，类似于做阅读理解的简答题。如上图(c)表示的，SQuAD的输入是问题和描述文本的句子对。输出是特征向量，通过在描述文本上接一层激活函数为softmax的全连接来获得输出文本的条件概率，全连接的输出节点个数是语料中Token的个数。<br>$$<br>P_{i}=\frac{e^{S T_{i}}}{\sum_{j}e^{S T_{i}}}<br>$$</li>
+</ul>
+<p>(d)命名实体识别</p>
+<ul>
+<li>CoNLL-2003 NER：判断一个句子中的单词是不是Person，Organization，Location，Miscellaneous或者other（无命名实体）。微调CoNLL-2003 NER时将整个句子作为输入，在每个时间片输出一个概率，并通过softmax得到这个Token的实体类别。</li>
+</ul>
+<h1 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h1><h2 id="4-1-优缺点"><a href="#4-1-优缺点" class="headerlink" title="4.1 优缺点"></a>4.1 优缺点</h2><ul>
+<li>优点:BERT是截至2018年10月的最新state of the art模型，通过预训练和精调横扫了11项NLP任务，这首先就是最大的优点了。而且它还用的是Transformer，也就是相对rnn更加高效、能捕捉更长距离的依赖。对比起之前的预训练模型，它捕捉到的是真正意义上的bidirectional context信息。</li>
+<li>缺点:作者在文中主要提到的就是MLM预训练时的mask问题：<blockquote>
+<ul>
+<li>[MASK]标记在实际预测中不会出现，训练时用过多[MASK]影响模型表现</li>
+<li>每个batch只有15%的token被预测，所以BERT收敛得比left-to-right模型要慢（它们会预测每个token）</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h2 id="4-2-BERT的贡献"><a href="#4-2-BERT的贡献" class="headerlink" title="4.2 BERT的贡献"></a>4.2 BERT的贡献</h2><ul>
+<li>使用Transformer的结构将已经走向瓶颈期的Word2Vec带向了一个新的方向，并再一次炒火了《Attention is All you Need》这篇论文；</li>
+<li>11个NLP任务的精度大幅提升足以震惊整个深度学习领域</li>
+<li>无私的开源了多种语言的源码和模型，具有非常高的商业价值</li>
+<li>迁移学习又一次胜利，而且这次是在NLP领域的大胜，狂胜</li>
+</ul>
+<h1 id="五、参考"><a href="#五、参考" class="headerlink" title="五、参考"></a>五、参考</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/48612853" target="_blank" rel="noopener">BERT详解</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/84559048" target="_blank" rel="noopener">从BERT, XLNet, RoBERTa到ALBERT</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/108031414" target="_blank" rel="noopener">从transformer到bert</a></li>
+<li><a href="https://mp.weixin.qq.com/s/9OqeUujQg0yEIc5x5GHg1Q" target="_blank" rel="noopener">从transformer到albert</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深度学习/" rel="tag"><i class="fa fa-tag"></i> 深度学习</a>
+          
+            <a href="/tags/BERT/" rel="tag"><i class="fa fa-tag"></i> BERT</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/读书笔记/推荐系统读书笔记/" rel="next" title="《推荐系统》读书笔记">
+                <i class="fa fa-chevron-left"></i> 《推荐系统》读书笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/推荐系统/推荐系统之深度学习模型/" rel="prev" title="推荐系统之深度学习模型">
+                推荐系统之深度学习模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.png"
+                alt="马野" />
+            
+              <p class="site-author-name" itemprop="name">马野</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="xiachiucas@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-E-Mail"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                网站链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.arxiv-sanity.com/top" title="Arixv热搜版" target="_blank">Arixv热搜版</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://paper.yanxishe.com/" title="AI研习社" target="_blank">AI研习社</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xpqiu" title="Fudan NLP" target="_blank">Fudan NLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/thunlp" title="THUNLP" target="_blank">THUNLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.bookstack.cn/read/huaxiaozhuan-ai/README.md" title="《AI算法工程师手册》" target="_blank">《AI算法工程师手册》</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、背景"><span class="nav-text">一、背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、BERT详解"><span class="nav-text">二、BERT详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Transormer结构"><span class="nav-text">2.1 Transormer结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Transormer的技术细节"><span class="nav-text">2.2 Transormer的技术细节</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、BERT应用"><span class="nav-text">三、BERT应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-BERT的Embedding"><span class="nav-text">3.1 BERT的Embedding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-BERT的预训练"><span class="nav-text">3.2 BERT的预训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-Task-1：-Masked-Language-Model"><span class="nav-text">3.2.1 Task #1： Masked Language Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-Task-2-Next-Sentence-Prediction"><span class="nav-text">3.2.2 Task #2: Next Sentence Prediction</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-BERT的FineTuning"><span class="nav-text">3.3 BERT的FineTuning</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、总结"><span class="nav-text">四、总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-优缺点"><span class="nav-text">4.1 优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-BERT的贡献"><span class="nav-text">4.2 BERT的贡献</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、参考"><span class="nav-text">五、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">马野</span>
+
+  
+</div>
+
+
+<div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+<div>
+<p >Hosted by <a target="_blank" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'TjWnQkO6exbqDEXcjR0WpplS-gzGzoHsz',
+        appKey: 'NBIbiOSvsE8jCwyazUpjhoOn',
+        placeholder: '欢迎大家来评论',
+        avatar:'mp',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

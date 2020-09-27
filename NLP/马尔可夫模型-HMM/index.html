@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="序列标注,分词," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、简介隐马尔可夫(Hidden Markov model)模型是一类基于概率统计的模型，是一种结构最简单的动态贝叶斯网，是一种重要的有向图模型。自上世纪80年代发展起来，在时序数据建模，例如：语音识别、文字识别、自然语言处理等领域广泛应用。隐马尔可夫模型涉及的变量、参数众多，应用也很广泛。 2、隐马尔可夫模型的基本概念2.1、隐马尔可夫模型的定义隐马尔可夫模型是关于时序的概率模型，描述由一个隐藏">
+<meta name="keywords" content="序列标注,分词">
+<meta property="og:type" content="article">
+<meta property="og:title" content="马尔可夫模型-HMM">
+<meta property="og:url" content="http://www.mayexia.com/NLP/马尔可夫模型-HMM/index.html">
+<meta property="og:site_name" content="梵  高  先  生">
+<meta property="og:description" content="1、简介隐马尔可夫(Hidden Markov model)模型是一类基于概率统计的模型，是一种结构最简单的动态贝叶斯网，是一种重要的有向图模型。自上世纪80年代发展起来，在时序数据建模，例如：语音识别、文字识别、自然语言处理等领域广泛应用。隐马尔可夫模型涉及的变量、参数众多，应用也很广泛。 2、隐马尔可夫模型的基本概念2.1、隐马尔可夫模型的定义隐马尔可夫模型是关于时序的概率模型，描述由一个隐藏">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.mayexia.com/imgs/马尔可夫模型/01.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/马尔可夫模型/03.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/马尔可夫模型/02.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/马尔可夫模型/04.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/马尔可夫模型/05.gif">
+<meta property="og:image" content="http://www.mayexia.com/imgs/马尔可夫模型/06.png">
+<meta property="og:updated_time" content="2020-09-27T06:53:05.349Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="马尔可夫模型-HMM">
+<meta name="twitter:description" content="1、简介隐马尔可夫(Hidden Markov model)模型是一类基于概率统计的模型，是一种结构最简单的动态贝叶斯网，是一种重要的有向图模型。自上世纪80年代发展起来，在时序数据建模，例如：语音识别、文字识别、自然语言处理等领域广泛应用。隐马尔可夫模型涉及的变量、参数众多，应用也很广泛。 2、隐马尔可夫模型的基本概念2.1、隐马尔可夫模型的定义隐马尔可夫模型是关于时序的概率模型，描述由一个隐藏">
+<meta name="twitter:image" content="http://www.mayexia.com/imgs/马尔可夫模型/01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mayexia.com/NLP/马尔可夫模型-HMM/"/>
+
+
+
+
+
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+  <title>马尔可夫模型-HMM | 梵  高  先  生</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梵  高  先  生</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.mayexia.com/NLP/马尔可夫模型-HMM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="马野">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梵  高  先  生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">马尔可夫模型-HMM</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-22T18:58:05+08:00">
+                2018-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/NLP/马尔可夫模型-HMM/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/NLP/马尔可夫模型-HMM/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h1><p>隐马尔可夫(Hidden Markov model)模型是一类基于概率统计的模型，是一种结构最简单的动态贝叶斯网，是一种重要的有向图模型。自上世纪80年代发展起来，在时序数据建模，例如：语音识别、文字识别、自然语言处理等领域广泛应用。隐马尔可夫模型涉及的变量、参数众多，应用也很广泛。</p>
+<h1 id="2、隐马尔可夫模型的基本概念"><a href="#2、隐马尔可夫模型的基本概念" class="headerlink" title="2、隐马尔可夫模型的基本概念"></a>2、隐马尔可夫模型的基本概念</h1><h2 id="2-1、隐马尔可夫模型的定义"><a href="#2-1、隐马尔可夫模型的定义" class="headerlink" title="2.1、隐马尔可夫模型的定义"></a>2.1、隐马尔可夫模型的定义</h2><p>隐马尔可夫模型是关于时序的概率模型，描述由一个隐藏的马尔可夫链随机生成不可观测的状态随机序列，再由各个状态生成一个观测而产生观测随机序列的过程。隐藏的马尔可夫链随机生成的状态的序列，称为状态序列（state sequence);每个状态生成一个观测，而由此产生的观测的随机序列，称为观测序列（observation sequence)。序列的每一个位置又可以看作是一个时刻。</p>
+<p>什么叫隐马尔可夫链呢？就是每个状态的转移只依赖于之前的n个状态，这个过程被称为1个n阶的模型，其中n是影响转移状态的数目。最简单的马尔可夫过程就是一阶过程，每一个状态的转移只依赖于其之前的那一个状态。用数学表达式表示就是：<br>$$<br>P(X_{n+1}=x|X_{1}=x_{1},X_{2}=x_{2},X_{3}=x_{3},….X_{n}=x_{n})=P(X_{n+1}=x|X_{n}=x_{n})<br>$$<br>隐马尔可夫模型由初始概率分布、状态转移概率分布、以及观测概率分布确定，隐马尔可夫模型的定义如下：<br>设Q是所有可能的状态的集合，V是所有可能的观测的集合。<br>$$<br>Q={q_1,q_2,q_3,…..,q_N}, V={v_1,v_2,v_3,….,v_M}<br>$$<br>其中N是可能的状态数，M为可能的观测数。<br>状态q是不可见的，观测v是可见的。应用到词性标注系统，词就是v，词性就是q。<br>I是长度为T的状态序列，O是对应的观测序列。<br>$$<br>I=(i_1,i_2,…,i_T),O=(o_1,o_2,…,o_T)<br>$$</p>
+<blockquote>
+<p>这可以想象为相当于给定了一个词（O）+词性（I）的训练集，于是我们手上有了一个可以用隐马尔可夫模型解决的实际问题。</p>
+</blockquote>
+<p>定义A为状态转移概率矩阵：<br>$$<br>A=\Big[a_{ij}\Big]_{N \times N}<br>$$</p>
+<p>其中，<br>$$<br>a_{tj}=P(i_{t+1}=q_j|i_{t}=q_i);i=1,2,…,N;j=1,2,…,N<br>$$<br>是在时刻t处于状态$q_i$的条件下在时刻t+1转移到状态$q_j$的概率。</p>
+<blockquote>
+<p>这部分阐述的是马尔可夫的一阶过程，每一个状态的转移只依赖于其之前的那一个状态</p>
+</blockquote>
+<p>B是观测概率矩阵:<br>$$<br>B=\Big[b_j(k)\Big]_{N \times M}<br>$$<br>其中，<br>$$<br>b_j(k)=P(o_t=v_k|i_{t}=q_j),k=1,2,….,M;j=1,2,…,N<br>$$<br>是在时刻t处于状态$q_j$的条件下生成观测$v_k$</p>
+<blockquote>
+<p>这实际上在作另一个假设，观测是由当前时刻的状态决定的，跟其他因素无关.</p>
+</blockquote>
+<p>$\pi$是初始状态概率向量：<br>$$<br>\pi=(\pi_{i})<br>$$</p>
+<p>其中，<br>$$<br>\pi_{i}=P(i_1=q_i),i=1,2,…,N<br>$$<br>是时刻t=1处于状态$q_j$的概率。</p>
+<p>隐马尔可夫模型由初始状态概率向量$\pi$、状态转移概率矩阵A和观测概率矩阵B决定。$\pi$和A决定状态序列，B决定观测序列。因此，隐马尔可夫模型$\lambda$可以用三元符号表示，即<br>$$<br>\lambda=(A,B,\pi)<br>$$<br>$(A,B,\pi)$称为隐马尔可夫模型的三要素。如果加上一个具体的状态集合Q和观测序列V，则构成了HMM的五元组。</p>
+<p>状态转移概率矩阵A与初始状态概率向量$\pi$确定了隐藏的马尔可夫链，生成不可观测的状态序列。观测概率矩阵B确定了如何从状态生成观测，与状态序列综合确定了如何产生观测序列。</p>
+<p>从定义可知，隐马尔可夫模型作了两个基本假设：<br>(1)齐次马尔可夫性假设，即假设隐藏的马尔可夫链在任意时刻t的状态只依赖于其前一时刻的状态，与其他时刻的状态及观测无关。<br>$$<br>p(i_t|i_{t-1},o_{t-1},….,i_1,o_1)=P(i_t|i_{t-1}),t=1,2,…,T<br>$$<br>(2)观测独立性假设，即假设任意时刻的观测只依赖于该时刻的马尔可夫链的状态，与其他观测及状态无关。<br>$$<br>P(o_t|i_T,o_T,i_{T-1},o_{T-1},….,i_{t+1},o_{t+1},i_t,i_{t-1},o_{t-1},…,i_1,o_1)=p(o_t|i_t)<br>$$</p>
+<h2 id="2-2、定义的实例说明"><a href="#2-2、定义的实例说明" class="headerlink" title="2.2、定义的实例说明"></a>2.2、定义的实例说明</h2><p>你本是一个城乡结合部修电脑做网站的小码农，突然春风吹来全民创业。于是跟村头诊所的老王响应总理号召合伙创业去了，有什么好的创业点子呢？对了，现在不是很流行什么“大数据”么，那就搞个“医疗大数据”吧，虽然只是个乡镇诊所……但管它呢，投资人就好这口。</p>
+<p>数据从哪儿来呢？你把老王，哦不，是王老板的出诊记录都翻了一遍，发现从这些记录来看，村子里的人只有两种病情：要么健康，要么发烧。但村民不确定自己到底是哪种状态，只能回答你感觉正常、头晕或冷。有位村民是诊所的常客，他的病历卡上完整地记录了这三天的身体特征(正常、头晕或冷)，他想利用王老板的“医疗大数据”得出这三天的诊断结果(健康或发烧)。</p>
+<p>这时候王老板掐指一算，说其实感冒这种病，只跟病人前一天的病情有关，并且当天的病情决定当天的身体感觉。</p>
+<p>于是你一拍大腿，天助我也，隐马尔可夫模型的两个基本假设都满足了，于是统计了一下病历卡上的数据，撸了这么一串Python代码：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">states = (<span class="string">'Healthy'</span>, <span class="string">'Fever'</span>)</span><br><span class="line"></span><br><span class="line">observations = (<span class="string">'normal'</span>, <span class="string">'cold'</span>, <span class="string">'dizzy'</span>)</span><br><span class="line"></span><br><span class="line">start_probability = &#123;<span class="string">'Healthy'</span>: <span class="number">0.6</span>, <span class="string">'Fever'</span>: <span class="number">0.4</span>&#125;</span><br><span class="line"></span><br><span class="line">transition_probability = &#123;</span><br><span class="line">    <span class="string">'Healthy'</span>: &#123;<span class="string">'Healthy'</span>: <span class="number">0.7</span>, <span class="string">'Fever'</span>: <span class="number">0.3</span>&#125;,</span><br><span class="line">    <span class="string">'Fever'</span>: &#123;<span class="string">'Healthy'</span>: <span class="number">0.4</span>, <span class="string">'Fever'</span>: <span class="number">0.6</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">emission_probability = &#123;</span><br><span class="line">    <span class="string">'Healthy'</span>: &#123;<span class="string">'normal'</span>: <span class="number">0.5</span>, <span class="string">'cold'</span>: <span class="number">0.4</span>, <span class="string">'dizzy'</span>: <span class="number">0.1</span>&#125;,</span><br><span class="line">    <span class="string">'Fever'</span>: &#123;<span class="string">'normal'</span>: <span class="number">0.1</span>, <span class="string">'cold'</span>: <span class="number">0.3</span>, <span class="string">'dizzy'</span>: <span class="number">0.6</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/imgs/马尔可夫模型/01.png" alt="An_example_of_HMM"></p>
+<p>states代表病情，observations表示最近三天观察到的身体感受，start_probability代表病情的分布，transition_probability是病情到病情的转移概率，emission_probability则是病情表现出身体状况的发射概率。以上列出的就是隐马的五元组。</p>
+<h1 id="3、隐马尔可夫模型的3个基本问題"><a href="#3、隐马尔可夫模型的3个基本问題" class="headerlink" title="3、隐马尔可夫模型的3个基本问題"></a>3、隐马尔可夫模型的3个基本问題</h1><p>隐马尔可夫模型有3个基本问题：</p>
+<ul>
+<li>概率计算问题。给定模型$(A,B,\pi)$观测序列$O=(o_1,o_2,….,o_T)$,计算在模型$\lambda$下观测序列O出现的概率$P(O|\lambda)$。</li>
+<li>学习问题。己知观测序列$O=(o_1,o_2,….,o_T)$，估计模型$(A,B,\pi)$参数，使得在该模型下观测序列概率$P(O|\lambda)$最大。即用极大似然估计的方法估计参数。</li>
+<li>预测问题，也称为解码（decoding)问题。已知模型$(A,B,\pi)$观测序列$O=(o_1,o_2,….,o_T)$求对给定观测序列条件概率$P(I|O)$最大的状态序列$I=(i_1,i_2,,,,,i_T)$。即给定观测序列，求最有可能的对应的状态序列。</li>
+</ul>
+<p>下面各节将逐一介绍这些基本问题的解法。</p>
+<h2 id="3-1、概率计算算法"><a href="#3-1、概率计算算法" class="headerlink" title="3.1、概率计算算法"></a>3.1、概率计算算法</h2><p>计算观测序列概率有前向（forward)与后向（backward)算法，以及概念上可行但计算上不可行的直接计算法（枚举）。前向后向算法无非就是求第一个状态的前向概率或最后一个状态的后向概率，然后向后或向前递推即可。</p>
+<h3 id="3-1-1、直接计算法"><a href="#3-1-1、直接计算法" class="headerlink" title="3.1.1、直接计算法"></a>3.1.1、直接计算法</h3><p>给定模型，求给定长度为T的观测序列的概率，直接计算法的思路是枚举所有的长度T的状态序列，计算该状态序列与观测序列的联合概率（隐状态发射到观测），对所有的枚举项求和即可。在状态种类为N的情况下，一共有$N^T$种排列组合，每种组合计算联合概率的计算量为T，总的复杂度为$O(TN^T)$，并不可取。</p>
+<h3 id="3-1-2、前向算法"><a href="#3-1-2、前向算法" class="headerlink" title="3.1.2、前向算法"></a>3.1.2、前向算法</h3><p><strong>定义(前向概率）</strong> 给定隐马尔可夫模型$\lambda$，定义到时刻t为止的观测序列为$o_1,o_2,…,o_t$且状态为$q_i$的概率为前向概率，记作<br>$$<br>\alpha_t(i)=P(o_1,o_2,…,o_t,i_t=q_i|\lambda)<br>$$<br>可以递推地求得前向概率$\alpha_t(i)$及观测序列概率$P(O|\lambda)$。</p>
+<p><strong>算法(观测序列概率的前向算法）</strong><br>输入：隐马尔可夫模型$\lambda$，观测序列O；<br>输出：观测序列概率$P(O|\lambda)$</p>
+<p>(1)初值<br>$$<br>\alpha_1(i)=\pi_{i}b_{i}(o_1),i=1,2,….,N<br>$$<br>前向概率的定义中一共限定了两个条件，一是到当前为止的观测序列，另一个是当前的状态。所以初值的计算也有两项（观测和状态），一项是初始状态概率，另一项是发射到当前观测的概率。</p>
+<p>(2)递推对$t=1,2,….,T-1$<br>$$<br>\alpha_{t+1}(i)=\Big[\sum_{j=1}^{N}\alpha_t(j)a_{ji}\Big]b_i(o_{t+1})<br>$$<br>每次递推同样由两部分构成，大括号中是当前状态为i且观测序列的前t个符合要求的概率，括号外的是状态i发射观测t+1的概率。</p>
+<p>(3)终止<br>$$<br>P(O|\lambda)=\sum_{i=1}^{N}\alpha_T(i)<br>$$<br>由于到了时间T，一共有N种状态发射了最后那个观测，所以最终的结果要将这些概率加起来。<br>由于每次递推都是在前一次的基础上进行的，所以降低了复杂度。准确来说，其计算过程如下图所示:<br><img src="/imgs/马尔可夫模型/03.png" alt="向前概率计算01"><br><img src="/imgs/马尔可夫模型/02.png" alt="向前概率计算"></p>
+<p>下方标号表示时间节点，每个时间点都有N种状态，所以相邻两个时间之间的递推消耗N^2次计算。而每次递推都是在前一次的基础上做的，所以只需累加O(T)次，所以总体复杂度是O(T)个$N^2$，即$O(N^{2}T)$。</p>
+<p>前向算法Python实现<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_forward</span><span class="params">(self, obs_seq)</span>:</span></span><br><span class="line">    N = self.A.shape[<span class="number">0</span>]</span><br><span class="line">    T = len(obs_seq)</span><br><span class="line"></span><br><span class="line">    F = np.zeros((N,T))</span><br><span class="line">    F[:,<span class="number">0</span>] = self.pi * self.B[:, obs_seq[<span class="number">0</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">1</span>, T):</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> range(N):</span><br><span class="line">            F[n,t] = np.dot(F[:,t<span class="number">-1</span>], (self.A[:,n])) * self.B[n, obs_seq[t]]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> F</span><br></pre></td></tr></table></figure></p>
+<p>代码和伪码的对应关系还是很清晰的，F对应alpha，HMM的三个参数与伪码一致。</p>
+<h3 id="3-1-3、后向算法"><a href="#3-1-3、后向算法" class="headerlink" title="3.1.3、后向算法"></a>3.1.3、后向算法</h3><p><strong>定义(后向概率）</strong> 给定隐马尔可夫模型$\lambda$,定义在时刻t状态为$q_i$的条件下，从t+1到T的部分观测序列为$o_{t+1},o_{t+2},….,o_{T}$的概率为后向概率，记作<br>$$<br>\beta_{t}(i)=P(o_{t+1},o_{t+2},….,o_{T}|i_{T}=q_{i},\lambda)<br>$$<br>可以用递推的方法求得后向概率$\beta_t(i)$及观测序列概率$P(O|\lambda)$。</p>
+<p><strong>算法(观测序列概率的后向算法）</strong></p>
+<p>输入：隐马尔可夫模型$\lambda$，观测序列O；<br>输出：观测序列概率$P(O|\lambda)$</p>
+<p>(1)初值<br>$$<br>\beta_T(i)=1,i=1,2,….,N<br>$$<br>根据定义，从T+1到T的部分观测序列其实不存在，所以硬性规定这个值是1。</p>
+<p>(2)对$t=T-1,T-2,….,1$<br>$$<br>beta_t(i)=\sum_{j=1}^{N}a_{ij}b_j(a_{t+1})\beta_{t+1}(j),i=1,2,…,N<br>$$<br>$a_{ij}$表示状态i转移到j的概率,$b_j$表示发射$O_{t+1}$,$\beta_{t+1}(j)$表示j后面的序列对应的后向概率。</p>
+<p>(3)<br>$$<br>P(O|\lambda)=\sum_{i=1}^{N}\pi_{i}b_i(o_1)\beta_1(i)<br>$$<br>最后的求和是因为，在第一个时间点上有N种后向概率都能输出从2到T的观测序列，所以乘上输出O1的概率后求和得到最终结果。<br>其计算过程如下图所示:<br><img src="/imgs/马尔可夫模型/04.png" alt="向后概率计算"></p>
+<p>后向算法的Python实现<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_backward</span><span class="params">(self, obs_seq)</span>:</span></span><br><span class="line">    N = self.A.shape[<span class="number">0</span>]</span><br><span class="line">    T = len(obs_seq)</span><br><span class="line"></span><br><span class="line">    X = np.zeros((N,T))</span><br><span class="line">    X[:,<span class="number">-1</span>:] = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> reversed(range(T<span class="number">-1</span>)):</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> range(N):</span><br><span class="line">            X[n,t] = np.sum(X[:,t+<span class="number">1</span>] * self.A[n,:] * self.B[:, obs_seq[t+<span class="number">1</span>]])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure></p>
+<h2 id="3-2、学习算法"><a href="#3-2、学习算法" class="headerlink" title="3.2、学习算法"></a>3.2、学习算法</h2><p>隐马尔可夫模型的学习，根据训练数据是包括观测序列和对应的状态序列还是只有观测序列，可以分别由监督学习与非监督学习实现，下面主要介绍监督学习算法，而非监督学习算法–Baum-Weich算法(EM算法学习HMM参数的算法)因为无监督学习并不靠谱,而且也比较复杂，所以就不介绍了。</p>
+<p><strong>监督学习方法</strong></p>
+<ol>
+<li><p><em>转移概率$a_{ij}$的估计</em><br>设样本中时刻t处于状态i时刻t+1转移到状态j的频数为$A_{ij}$,那么状态转移概率$a_{ij}$的估计是<br>$$<br>\hat{a}_{ij}=\frac{A_{ij}}{\sum_{j=1}^{N}A_{ij}}<br>$$<br>很简单的最大似然估计。</p>
+<blockquote>
+<p>拿分词来举例吧，如果标注集合为B、M、E、S四个，那么假设$a_{ij}$是状态B转到E的概率，则有$A_{ij}$为在状态为B$\rightarrow$状态E的样本数，$\sum_{j=1}^{N}A_{ij}$则为在状态为B的情况下转移到B、M、E、S的样本数之和。此时为:<br>$$<br>\hat{a}_{B \rightarrow E}=\frac{count(B \rightarrow E)}{count(B \rightarrow B)+count(B \rightarrow M)+count(B \rightarrow E)+count(B \rightarrow S)}<br>$$</p>
+</blockquote>
+</li>
+<li><p><em>观测概率的估计</em><br>设样本中状态为j并观测为k的频数是$B_{jk}$那么状态为j观测为k的概率的估计是<br>$$<br>\hat{b}_j(k)=\frac{B_{jk}}{\sum_{k=1}^{M}B_{jk}},j=1,2,…,N;k=1,2,…,M<br>$$</p>
+<blockquote>
+<p>同样拿分词来说，假定给定训练语料“<strong>我/S 来/B 到/E 北/B 京/E 大/B 学/M 城/E</strong>”，则有如下：<br>状态集合：B、M、E、S<br>观测集合(字的集合)：我、来、到、北、京、大、学、城<br>假定$b_j(k)$为状态B $\rightarrow$ 观测“北”的概率，状态B的情况下的观测值有：来、北、大;则有:<br>$$<br>\hat{b}_B(北)=\frac{count(B \rightarrow 北)}{count(B \rightarrow 来)+count(B \rightarrow 北)+count(B \rightarrow 大)}<br>$$</p>
+</blockquote>
+</li>
+<li><p><em>初始状态概率$\pi_i$的估计$\hat{\pi_i}$为S个样本中初始状态为$q_i$的频率</em>。</p>
+<blockquote>
+<p>同样还是拿分词来举例，假定给以如下的训练语料：<br>我/S 来/B 到/E 北/B 京/E 大/B 学/M 城/E<br>吉/B 林/M 省/E 长/B 春/M 市/E 长/B 春/E 药B/ 店/E<br>则初始状态的分布为{B:0.5,M:0,E:0,S:0.5}，其实就是计算每个句子的开头第一个字的状态的概率。</p>
+</blockquote>
+</li>
+</ol>
+<p>由于监督学习需要使用训练数据，而人工标注训练数据往往代价很高，有时就会利用非监督学习的方法。</p>
+<h2 id="3-3、预测算法"><a href="#3-3、预测算法" class="headerlink" title="3.3、预测算法"></a>3.3、预测算法</h2><p>维特比算法实际是用动态规划解隐马尔可夫模型预测问题，即用动态规划(dynamic programming)求概率最大路径（最优路径）。</p>
+<p><strong>算法(维特比算法）</strong></p>
+<p>输入：模型$\lambda=(A,B,\pi)$和观测序列$O=(o_1,o_2,…,o_T)$<br>输出：最优路径,即最优状态序列:$I^{*}=(i_{1}^{*},i_{2}^{*},…,i_{T}^{*})$</p>
+<p>(1)初始化<br>$$<br>\begin{split}<br>{} &amp; \delta_{1}(i)=\pi_{i}b_{i}(o_{1}),i=1,2,3,…,N \\<br>{} &amp; \psi_{1}(i)=0,i=1,2,3,…,N<br>\end{split}<br>$$</p>
+<p>(2)递推。对$t=2,3,…,T$<br>$$<br>\begin{split}<br>{} &amp; \delta_{t}(i)=\max_{1 \leq j \leq N}[\delta_{t-1}(j)a_{ji}]b_{i}(o_{t}),i=1,2,…,N \\<br>{} &amp; \psi_{t}(i)=arg \max_{1 \leq j \leq N}[\delta_{t-1}(j)a_{ji}],i=1,2,…,N<br>\end{split}<br>$$</p>
+<blockquote>
+<p>$\delta_{t}(i)$:</p>
+</blockquote>
+<p>(3)终止<br>$$<br>\begin{split}<br>{} &amp; P^{*}=\max_{1 \leq i \leq N}\delta_{T}(i)<br>{} &amp; i_{T}^{*}=arg \max_{1 \leq i \leq N}[\delta_{T}(i)]<br>\end{split}<br>$$</p>
+<p>(4)最优路径回溯。对$t=T-1,T-2,…,1$<br>$$<br>i_{t}^{*}=\psi_{t+1}(i_{t+1}^{*})<br>$$<br>求得最优路径$I^{*}=(i_{1}^{*},i_{2}^{*},…,i_{T}^{*})$</p>
+<p><strong>维特比算法Python实现</strong></p>
+<p>不管是监督学习，还是非监督学习，我们反正都训练出了一个HMM模型。现在诊所来了一位病人，他最近三天的病状是：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">observations = (<span class="string">'normal'</span>, <span class="string">'cold'</span>, <span class="string">'dizzy'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>如何用Viterbi算法计算他的病情以及相应的概率呢？<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">viterbi</span><span class="params">(self, obs_seq)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Returns</span></span><br><span class="line"><span class="string">    -------</span></span><br><span class="line"><span class="string">    V : numpy.ndarray</span></span><br><span class="line"><span class="string">        V [s][t] = Maximum probability of an observation sequence ending</span></span><br><span class="line"><span class="string">                   at time 't' with final state 's'</span></span><br><span class="line"><span class="string">    prev : numpy.ndarray</span></span><br><span class="line"><span class="string">        Contains a pointer to the previous state at t-1 that maximizes</span></span><br><span class="line"><span class="string">        V[state][t]</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    N = self.A.shape[<span class="number">0</span>]</span><br><span class="line">    T = len(obs_seq)</span><br><span class="line">    prev = np.zeros((T - <span class="number">1</span>, N), dtype=int)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># DP matrix containing max likelihood of state at a given time</span></span><br><span class="line">    V = np.zeros((N, T))</span><br><span class="line">    V[:,<span class="number">0</span>] = self.pi * self.B[:,obs_seq[<span class="number">0</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">1</span>, T):</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> range(N):</span><br><span class="line">            seq_probs = V[:,t<span class="number">-1</span>] * self.A[:,n] * self.B[n, obs_seq[t]]</span><br><span class="line">            prev[t<span class="number">-1</span>,n] = np.argmax(seq_probs)</span><br><span class="line">            V[n,t] = np.max(seq_probs)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> V, prev</span><br></pre></td></tr></table></figure></p>
+<p>这应该是目前最简洁最优雅的实现了，调用方法如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">h = hmm.HMM(A, B, pi)</span><br><span class="line">V, p = h.viterbi(observations_index)</span><br><span class="line"><span class="keyword">print</span> <span class="string">" "</span> * <span class="number">7</span>, <span class="string">" "</span>.join((<span class="string">"%10s"</span> % observations_index_label[i]) <span class="keyword">for</span> i <span class="keyword">in</span> observations_index)</span><br><span class="line"><span class="keyword">for</span> s <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">2</span>):</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%7s: "</span> % states_index_label[s] + <span class="string">" "</span>.join(<span class="string">"%10s"</span> % (<span class="string">"%f"</span> % v) <span class="keyword">for</span> v <span class="keyword">in</span> V[s])</span><br><span class="line"><span class="keyword">print</span> <span class="string">'\nThe most possible states and probability are:'</span></span><br><span class="line">p, ss = h.state_path(observations_index)</span><br><span class="line"><span class="keyword">for</span> s <span class="keyword">in</span> ss:</span><br><span class="line">    <span class="keyword">print</span> states_index_label[s],</span><br><span class="line"><span class="keyword">print</span> p</span><br></pre></td></tr></table></figure></p>
+<p>输出结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">normal       cold      dizzy</span><br><span class="line">Healthy:   0.300000   0.084000   0.005880</span><br><span class="line">Fever:   0.040000   0.027000   0.015120</span><br><span class="line"></span><br><span class="line">The most possible states and probability are</span><br><span class="line">Healthy Healthy Fever 0.01512</span><br></pre></td></tr></table></figure></p>
+<p>对算法有疑问的可以参考这段动画，将代码单步一遍，什么都明白了：</p>
+<p><img src="/imgs/马尔可夫模型/05.gif" alt="维特比算法"></p>
+<h1 id="4、jieba分词的马尔可夫模型"><a href="#4、jieba分词的马尔可夫模型" class="headerlink" title="4、jieba分词的马尔可夫模型"></a>4、jieba分词的马尔可夫模型</h1><p>jieba分词想必大家都知道，其分词模型分词部分就是使用了HMM完成的。在源码中有三个文件<code>prob_trans.py</code>为状态转移矩阵，<code>prob_start.py</code>为初始状态矩阵，<code>prob_emit.py</code>为发射矩阵。这三个文件都是训练好的模型文件。然后其使用维特比算法进行分词，我将其代码copy并进行适当修改打印出中间结果，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment">#将相关的模型文件import进来</span></span><br><span class="line"><span class="keyword">from</span> dataset.prob_emit <span class="keyword">import</span> P <span class="keyword">as</span> prob_emit</span><br><span class="line"><span class="keyword">from</span> dataset.prob_start <span class="keyword">import</span> P <span class="keyword">as</span> prob_start</span><br><span class="line"><span class="keyword">from</span> dataset.prob_trans <span class="keyword">import</span> P <span class="keyword">as</span> prob_trans</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 由于采用的是jieba分词的训练数据，而其训练数据都是取了log的结果，所以后续公式中的'*'都会变为'+'</span></span><br><span class="line">MIN_FLOAT = <span class="number">-3.14e100</span></span><br><span class="line"></span><br><span class="line">PrevStatus = &#123;</span><br><span class="line">    <span class="string">'B'</span>: <span class="string">'ES'</span>,</span><br><span class="line">    <span class="string">'M'</span>: <span class="string">'MB'</span>,</span><br><span class="line">    <span class="string">'S'</span>: <span class="string">'SE'</span>,</span><br><span class="line">    <span class="string">'E'</span>: <span class="string">'BM'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印路径概率表</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_dptable</span><span class="params">(V)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">"    "</span>,</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(V)): <span class="keyword">print</span> <span class="string">"%7d"</span> % i,</span><br><span class="line">    <span class="keyword">print</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> V[<span class="number">0</span>].keys():</span><br><span class="line">        <span class="keyword">print</span> <span class="string">"%.5s: "</span> % y,</span><br><span class="line">        <span class="keyword">for</span> t <span class="keyword">in</span> range(len(V)):</span><br><span class="line">            <span class="keyword">print</span> <span class="string">"%.7s"</span> % (<span class="string">"%f"</span> % V[t][y]),</span><br><span class="line">        <span class="keyword">print</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">viterbi</span><span class="params">(obs, states, start_p, trans_p, emit_p)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param obs:观测序列</span></span><br><span class="line"><span class="string">    :param states:隐状态</span></span><br><span class="line"><span class="string">    :param start_p:初始概率（隐状态）</span></span><br><span class="line"><span class="string">    :param trans_p:转移概率（隐状态）</span></span><br><span class="line"><span class="string">    :param emit_p: 发射概率 （隐状态表现为显状态的概率）</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 路径概率表 V[时间][隐状态] = 概率</span></span><br><span class="line">    V = [&#123;&#125;]</span><br><span class="line">    <span class="comment"># 一个中间变量，代表当前状态是哪个隐状态</span></span><br><span class="line">    path = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 初始化初始状态 (t == 0)</span></span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> states:</span><br><span class="line">        <span class="comment"># V[0][y] = start_p[y] * emit_p[y][obs[0]]</span></span><br><span class="line">        V[<span class="number">0</span>][y] = start_p[y] + emit_p[y].get(obs[<span class="number">0</span>], MIN_FLOAT)</span><br><span class="line">        path[y] = [y]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对 t &gt; 0 跑一遍维特比算法</span></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">1</span>, len(obs)):</span><br><span class="line">        V.append(&#123;&#125;)</span><br><span class="line">        newpath = &#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> y <span class="keyword">in</span> states:</span><br><span class="line">            <span class="comment"># log(概率 隐状态) =    log(前状态是y0的概率 * y0转移到y的概率 * y表现为当前状态的概率)</span></span><br><span class="line">            (prob, state) = max([(V[t - <span class="number">1</span>][y0]  + trans_p[y0].get(y,MIN_FLOAT) + emit_p[y].get(obs[t],MIN_FLOAT), y0) <span class="keyword">for</span> y0 <span class="keyword">in</span> PrevStatus[y]])</span><br><span class="line">            <span class="comment"># 记录最大概率</span></span><br><span class="line">            V[t][y] = prob</span><br><span class="line">            <span class="comment"># 记录路径</span></span><br><span class="line">            newpath[y] = path[state] + [y]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 不需要保留旧路径</span></span><br><span class="line">        path = newpath</span><br><span class="line"></span><br><span class="line">    print_dptable(V)</span><br><span class="line">    (prob, state) = max([(V[len(obs) - <span class="number">1</span>][y], y) <span class="keyword">for</span> y <span class="keyword">in</span> <span class="string">"ES"</span>])</span><br><span class="line">    <span class="keyword">return</span> (prob, path[state])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    query = <span class="string">u"吉林省长春市长春药店"</span></span><br><span class="line">    (prob, tags) = viterbi(query,<span class="string">u"BMES"</span>,prob_start,prob_trans,prob_emit)</span><br><span class="line">    <span class="keyword">print</span> prob</span><br><span class="line">    word_list = [word <span class="keyword">for</span> word <span class="keyword">in</span> query]</span><br><span class="line">    word_tag_list= zip(word_list,tags)</span><br><span class="line">    <span class="keyword">for</span> word,tag <span class="keyword">in</span> word_tag_list:</span><br><span class="line">        <span class="keyword">print</span> word,<span class="string">"/"</span>,tag</span><br></pre></td></tr></table></figure>
+<p>运行后结果如下：<br><img src="/imgs/马尔可夫模型/06.png" alt="jieba的维特比分词结果"></p>
+<blockquote>
+<p>上面标红的结果练成一串就是最优路径，但是上面的结果很容易给大家造成误导，误导就是以为是求每一步的最优解就是结果，其实只是一种巧合和，局部最优并不一定是全局最优。其实在维特比求解的过程中，参照动态规划的最短路径的思想回溯，求得全局最优解。</p>
+</blockquote>
+<h1 id="5、参考"><a href="#5、参考" class="headerlink" title="5、参考"></a>5、参考</h1><p>《统计学习方法》<br><a href="https://en.wikipedia.org/wiki/Viterbi_algorithm#Example" target="_blank" rel="noopener">Viterbi algorithm(wiki)</a><br><a href="http://www.hankcs.com/ml/hidden-markov-model.html" target="_blank" rel="noopener">隐马尔可夫模型(码农场)</a><br>jieba分词的源码</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/序列标注/" rel="tag"><i class="fa fa-tag"></i> 序列标注</a>
+          
+            <a href="/tags/分词/" rel="tag"><i class="fa fa-tag"></i> 分词</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/NLP/词典分词之mmseg算法/" rel="next" title="词典分词之mmseg算法原理及其实现">
+                <i class="fa fa-chevron-left"></i> 词典分词之mmseg算法原理及其实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/NLP/条件随机场之基本概念与模型/" rel="prev" title="条件随机场之基本概念与模型">
+                条件随机场之基本概念与模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.png"
+                alt="马野" />
+            
+              <p class="site-author-name" itemprop="name">马野</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="xiachiucas@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-E-Mail"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                网站链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.arxiv-sanity.com/top" title="Arixv热搜版" target="_blank">Arixv热搜版</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://paper.yanxishe.com/" title="AI研习社" target="_blank">AI研习社</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xpqiu" title="Fudan NLP" target="_blank">Fudan NLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/thunlp" title="THUNLP" target="_blank">THUNLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.bookstack.cn/read/huaxiaozhuan-ai/README.md" title="《AI算法工程师手册》" target="_blank">《AI算法工程师手册》</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、简介"><span class="nav-text">1、简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、隐马尔可夫模型的基本概念"><span class="nav-text">2、隐马尔可夫模型的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1、隐马尔可夫模型的定义"><span class="nav-text">2.1、隐马尔可夫模型的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2、定义的实例说明"><span class="nav-text">2.2、定义的实例说明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、隐马尔可夫模型的3个基本问題"><span class="nav-text">3、隐马尔可夫模型的3个基本问題</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1、概率计算算法"><span class="nav-text">3.1、概率计算算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1、直接计算法"><span class="nav-text">3.1.1、直接计算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2、前向算法"><span class="nav-text">3.1.2、前向算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3、后向算法"><span class="nav-text">3.1.3、后向算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2、学习算法"><span class="nav-text">3.2、学习算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3、预测算法"><span class="nav-text">3.3、预测算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、jieba分词的马尔可夫模型"><span class="nav-text">4、jieba分词的马尔可夫模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、参考"><span class="nav-text">5、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">马野</span>
+
+  
+</div>
+
+
+<div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+<div>
+<p >Hosted by <a target="_blank" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'TjWnQkO6exbqDEXcjR0WpplS-gzGzoHsz',
+        appKey: 'NBIbiOSvsE8jCwyazUpjhoOn',
+        placeholder: '欢迎大家来评论',
+        avatar:'mp',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="决策树,CART算法,ID3,C4.5,剪枝," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、介绍决策树（Decision Tree）的思想是贪心(最优化分)与分治(子树划分)。构建决策树的目的是：随着划分过程的进行，使得决策树分支结点所包含的样本尽可能属于同一类别，即使得分类更准确。下图给出了一个决策树的简单例子:决策树模型在监督学习中非常常见，可用于分类（二分类、多分类）和回归。虽然将多棵弱决策树的Random Forest、GBDT等tree ensembel 模型更为常见，但是">
+<meta name="keywords" content="决策树,CART算法,ID3,C4.5,剪枝">
+<meta property="og:type" content="article">
+<meta property="og:title" content="决策树(ID3 &amp; C4.5 &amp; CART)及正则剪枝">
+<meta property="og:url" content="http://www.mayexia.com/机器学习/决策树(ID3 & C4.5 & CART)及正则剪枝/index.html">
+<meta property="og:site_name" content="梵  高  先  生">
+<meta property="og:description" content="1、介绍决策树（Decision Tree）的思想是贪心(最优化分)与分治(子树划分)。构建决策树的目的是：随着划分过程的进行，使得决策树分支结点所包含的样本尽可能属于同一类别，即使得分类更准确。下图给出了一个决策树的简单例子:决策树模型在监督学习中非常常见，可用于分类（二分类、多分类）和回归。虽然将多棵弱决策树的Random Forest、GBDT等tree ensembel 模型更为常见，但是">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/1.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/2.png">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/3.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/4.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/5.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/6.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/7.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/8.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/9.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/10.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/11.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/12.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/13.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/14.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/15.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/16.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/17.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/18.jpg">
+<meta property="og:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/19.jpg">
+<meta property="og:updated_time" content="2020-09-27T06:53:05.345Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="决策树(ID3 &amp; C4.5 &amp; CART)及正则剪枝">
+<meta name="twitter:description" content="1、介绍决策树（Decision Tree）的思想是贪心(最优化分)与分治(子树划分)。构建决策树的目的是：随着划分过程的进行，使得决策树分支结点所包含的样本尽可能属于同一类别，即使得分类更准确。下图给出了一个决策树的简单例子:决策树模型在监督学习中非常常见，可用于分类（二分类、多分类）和回归。虽然将多棵弱决策树的Random Forest、GBDT等tree ensembel 模型更为常见，但是">
+<meta name="twitter:image" content="http://www.mayexia.com/imgs/决策树及正则剪枝/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mayexia.com/机器学习/决策树(ID3 & C4.5 & CART)及正则剪枝/"/>
+
+
+
+
+
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+  <title>决策树(ID3 & C4.5 & CART)及正则剪枝 | 梵  高  先  生</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梵  高  先  生</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.mayexia.com/机器学习/决策树(ID3 & C4.5 & CART)及正则剪枝/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="马野">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梵  高  先  生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">决策树(ID3 & C4.5 & CART)及正则剪枝</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-16T16:00:18+08:00">
+                2018-10-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/机器学习/决策树(ID3 & C4.5 & CART)及正则剪枝/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/机器学习/决策树(ID3 & C4.5 & CART)及正则剪枝/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1、介绍"><a href="#1、介绍" class="headerlink" title="1、介绍"></a>1、介绍</h1><p>决策树（Decision Tree）的思想是贪心(最优化分)与分治(子树划分)。构建决策树的目的是：随着划分过程的进行，使得决策树分支结点所包含的样本尽可能属于同一类别，即使得分类更准确。下图给出了一个决策树的简单例子:<br><img src="/imgs/决策树及正则剪枝/1.png" alt="决策树的列子"><br>决策树模型在监督学习中非常常见，可用于分类（二分类、多分类）和回归。虽然将多棵弱决策树的Random Forest、GBDT等tree ensembel 模型更为常见，但是“完全生长”决策树因为其简单直观，具有很强的解释性，也有广泛的应用，而且决策树是tree ensemble 的基础，值得好好理解。一般而言一棵“完全生长”的决策树包含，特征选择、决策树构建、剪枝三个过程，本文主要介绍ID3、C4.5和CART这三种构造决策树的算法以及简要介绍树模型的正则和剪枝。</p>
+<p><strong><em>决策树的优点和缺点</em></strong><br>优点：</p>
+<ul>
+<li>决策树算法中学习简单的决策规则建立决策树模型的过程非常容易理解，</li>
+<li>决策树模型可以可视化，非常直观</li>
+<li>应用范围广，可用于分类和回归，而且非常容易做多类别的分类</li>
+<li>能够处理数值型和连续的样本特征</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>很容易在训练数据中生成复杂的树结构，造成过拟合（overfitting）。剪枝可以缓解过拟合的负作用，常用方法是限制树的高度、叶子节点中的最少样本数量。</li>
+<li>学习一棵最优的决策树被认为是NP-Complete问题。实际中的决策树是基于启发式的贪心算法建立的，这种算法不能保证建立全局最优的决策树。Random Forest 引入随机能缓解这个问题</li>
+</ul>
+<h1 id="2、ID3算法"><a href="#2、ID3算法" class="headerlink" title="2、ID3算法"></a>2、ID3算法</h1><p>ID3算法最早是由罗斯昆（J. Ross Quinlan）于1975年在悉尼大学提出的一种分类预测算法，算法的核心是“信息熵”。ID3算法通过计算每个属性的信息增益，认为信息增益高的是好属性，每次划分选取信息增益最高的属性为划分标准，重复这个过程，直至生成一个能完美分类训练样例的决策树。</p>
+<h2 id="2-1、信息熵"><a href="#2-1、信息熵" class="headerlink" title="2.1、信息熵"></a>2.1、信息熵</h2><p>熵这个概念最早起源于物理学，在物理学中是用来度量一个热力学系统的无序程度，而在信息学里面，熵是对不确定性的度量。在1948年，香农引入了信息熵（information entropy），将其定义为离散随机事件出现的概率，一个系统越是有序，信息熵就越低，反之一个系统越是混乱，它的信息熵就越高。所以信息熵可以被认为是系统有序化程度的一个度量。<br>对于有K个类别的分类问题来说，假定样本集合D中第 k 类样本所占的比例为$p_{k}(k=1,2,…,K)$,则样本集合D的信息熵定义为:<br>$$<br>H(D)=-\sum_{k=1}^{K}p_{k}log_{2}p_{k}<br>$$</p>
+<h2 id="2-2、信息增益"><a href="#2-2、信息增益" class="headerlink" title="2.2、信息增益"></a>2.2、信息增益</h2><p>定义：特征A对于数据集合D的信息增益为g(D,A),定义为集合D的经验熵H(D)与特征A给定条件下集合D的条件熵H(D|A)只差，即<br>$$<br>g(D,A)=H(D)-H(D|A)<br>$$<br>一般的，熵H(D)与条件熵H(D|A)之差称为互信息，决策树学习中的信息增益等价于数据集中类与特征的互信息。<br>通过以下例子计算信息增益:<br><img src="/imgs/决策树及正则剪枝/2.png" alt="sample1"><br>计算过程树下：<br>(1) 首先计算经验熵H(D):<br>$$<br>H(D)=-\frac{9}{15}log_{2}\frac{9}{15}-\frac{6}{15}log_{2}\frac{6}{15}=0.971<br>$$<br>(2) 计算各特征对于数据集合D的信息增益，分别以$A_{1}、A_{2}、A_{3}、A_{4}$分别表示年龄、有工作、有自己的房子和信贷情况4个特征，则计算如下：<br>计算$A_1$<br>$$<br>\begin{split}<br>g(D,A_{1}){} &amp;=H(D)-[\frac{5}{15}H(D_{1})+\frac{5}{15}H(D_{2})+\frac{5}{15}H(D_{3})] \\<br>          {} &amp;=0.971-[\frac{5}{15}(-\frac{2}{5}log_{2}\frac{2}{5}-\frac{3}{5}log_{2}\frac{3}{5}) \\<br>          {} &amp; \quad +\frac{5}{15}(-\frac{3}{5}log_{2}\frac{3}{5}-\frac{2}{5}log_{2}\frac{2}{5}) \\<br>          {} &amp; \quad +\frac{5}{15}(-\frac{1}{5}log_{2}\frac{1}{5}-\frac{4}{5}log_{2}\frac{4}{5})] \\<br>          {} &amp;=0.971-0.888=0.083<br>\end{split}<br>$$<br>这里的$A_{1}、A_{2}、A_{3}$分别是D中取值为青年、中年、老年的样本子集。<br>类似的计算$A_{2}、A_{3}、A_{4}$，结果如下：<br>$$<br>\begin{split}<br>g(D,A_{2}){} &amp;=H(D)-[\frac{5}{15}H(D_{1})+\frac{10}{15}H(D_{2})]=0.324 \\<br>g(D,A_{3}){} &amp;=0.420 \\<br>g(D,A_{4}){} &amp;=0.363<br>\end{split}<br>$$<br>最后,比较各特征的信息增益，由于特征$A_3$(有自己的房子)的信息增益值最大，所以选择$A_3$做为最优特征。</p>
+<h2 id="2-3、算法流程和思想"><a href="#2-3、算法流程和思想" class="headerlink" title="2.3、算法流程和思想"></a>2.3、算法流程和思想</h2><p><strong><em>ID3算法流程如下：</em></strong><br>输入：数据集D，特征集A，阈值$\varepsilon$<br>输出：决策树T</p>
+<ul>
+<li>(1) 若D中的所有实例都属于同一类$C_{k}$,则T为单节点树，并将类$C_{k}$做为该节点的类标记，返回T；</li>
+<li>(2) 若$A=\phi$，则T为单节点树，并将D中实例最大的类$C_{k}$做为该节点的类标记，返回T；</li>
+<li>(3) 否则按照上述例子计算A中各特征对D的信息增益，选择信息增益最大的特征$A_{g}$；</li>
+<li>(4) 如果$A_{g}$的信息增益小于阈值$\varepsilon$，则置T为单节点树，并将D中实例数最大的类$C_{k}$作为该节点的类标记，返回T;</li>
+<li>(5) 否则，对$A_{g}$的每一个可能只$a_{i}$，依据$A_{g}=a_{i}$将D分割若干非空子集$D_{i}$,将$D_{i}$中实例数最大的类作为标记，构建子结点，由结点及其子结点构成树T，返回T；</li>
+<li>(6) 对第i个子结点，以$D_{i}$为训练集，以$A-A_{g}$为特征集，递归的调用(1)~(5)步，得到子树$T_{i}$,返回$T_{i}$。</li>
+</ul>
+<p><strong><em>ID3算法的基本思想是：</em></strong><br>首先计算出原始数据集的信息熵，然后依次将数据中的每一个特征作为分支标准，并计算其相对于原始数据的信息增益，选择最大信息增益的分支标准来划分数据，因为信息增益越大，区分样本的能力就越强，越具有代表性。重复上述过程从而生成一棵决策树，很显然这是一种自顶向下的贪心策略。</p>
+<h1 id="3、C4-5算法"><a href="#3、C4-5算法" class="headerlink" title="3、C4.5算法"></a>3、C4.5算法</h1><p>ID3中使用信息增益其实是有一个缺点，那就是它偏向于具有大量值的属性–就是说在训练集中，某个属性所取的不同值的个数越多，那么越有可能拿它来作为分裂属性，而这样做有时候是没有意义的。所以在ID3算法上进行改进，C4.5使用了信息增益比来进行特征选择。</p>
+<h2 id="3-1、信息增益比"><a href="#3-1、信息增益比" class="headerlink" title="3.1、信息增益比"></a>3.1、信息增益比</h2><p>信息增益值的大小是相对于训练数据集而言，并无绝对的意义，在分类问题困难时，也就是说在训练数据集的经验熵大的时候，信息增益值会偏大，反之，信息增益值会变小。使用信息增益比可以对这一问题进行校正。<br><strong><em>定义：</em></strong> 特征集A对训练集D的信息增益比$g_{R}(D,A)$定义为其信息增益$g(D,A)$与训练数据集D的经验熵H(D)之比：<br>$$<br>g_{R}(D,A)=\frac{g(D,A)}{H(D)}<br>$$</p>
+<h2 id="3-2、算法流程和思想"><a href="#3-2、算法流程和思想" class="headerlink" title="3.2、算法流程和思想"></a>3.2、算法流程和思想</h2><p>C4.5的算法流程和ID3的算法流程一致，只是选取特征的方式不同。<br><strong><em>C4.5算法思想</em></strong><br>C4.5算法是对ID3算法的改进，C4.5克服了ID3的2个缺点：</p>
+<ul>
+<li>用信息增益选择属性时偏向于选择分枝比较多的属性值，即取值多的属性</li>
+<li>不能处理连续属性</li>
+</ul>
+<blockquote>
+<p><strong>注意:</strong></p>
+<ul>
+<li>增益率准则对可取值数目较少的属性有所偏好，因此C4.5算法并不是直接选择增益率最大的属性作为分支标准，而是先从候选属性中找出信息增益高于平均水平的属性，再从中选择增益率最高的。</li>
+<li>C4.5算法处理连续属性的方法是先把连续属性转换为离散属性再进行处理。虽然本质上属性的取值是连续的，但对于有限的采样数据它是离散的</li>
+</ul>
+</blockquote>
+<h1 id="4、CART算法"><a href="#4、CART算法" class="headerlink" title="4、CART算法"></a>4、CART算法</h1><p>CART（Classification And Regression Tree）算法既可以用于创建分类树，也可以用于创建回归树。CART算法的重要特点包含以下三个方面：</p>
+<ul>
+<li>二分(Binary Split)：在每次判断过程中，都是对样本数据进行二分。CART算法是一种二分递归分割技术，把当前样本划分为两个子样本，使得生成的每个非叶子结点都有两个分支，因此CART算法生成的决策树是结构简洁的二叉树。由于CART算法构成的是一个二叉树，它在每一步的决策时只能是“是”或者“否”，即使一个feature有多个取值，也是把数据分为两部分</li>
+<li>单变量分割(Split Based on One Variable)：每次最优划分都是针对单个变量。</li>
+<li>剪枝策略：CART算法的关键点，也是整个Tree-Based算法的关键步骤。剪枝过程特别重要，所以在最优决策树生成过程中占有重要地位。有研究表明，剪枝过程的重要性要比树生成过程更为重要，对于不同的划分标准生成的最大树(Maximum Tree)，在剪枝之后都能够保留最重要的属性划分，差别不大。反而是剪枝方法对于最优树的生成更为关键。<br>CART树生成就是递归的构建二叉决策树的过程，对回归使用平方误差最小化准则，对于分类树使用基尼指数(Gini index)准则，进行特征选择，生成二叉树。</li>
+</ul>
+<h2 id="4-1、回归树"><a href="#4-1、回归树" class="headerlink" title="4.1、回归树"></a>4.1、回归树</h2><p>CART回归树预测回归连续型数据，假设X与Y分别是输入和输出变量，并且Y是连续变量。在训练数据集所在的输入空间中，递归的将每个区域划分为两个子区域并决定每个子区域上的输出值，构建二叉决策树。<br>$$<br>D={(x_{1},y_{1}),(x_{2},y_{2}),(x_{3},y_{3})….,(x_{n},y_{n})}<br>$$</p>
+<p><strong>选择最优切分变量j与切分点s：</strong> 遍历变量j，对规定的切分变量j扫描切分点s，选择使下式得到最小值时的(j,s)对。其中$R_m$是被划分的输入空间，$c_m$是空间$R_m$对应的固定输出值。<br>$$<br>min_{j,s}\big[min_{c_{i}}\sum_{x_{i} \in R_{i}(j,s)}(y_{i}-c_{i})^2 + min_{c_{2}}\sum_{x_{i} \in R_{i}(j,s)}(y_{i}-c_{1})^2\big]<br>$$</p>
+<p>用选定的(j,s)对，划分区域并决定相应的输出值:<br>$$<br>R_{1}(j,s)={x|x^{(j)} \leq s},R_{2}(j,s)={x|x^{(j)} &gt; s} \\<br>\hat{c}_{m} = \frac{1}{N_{m}}\sum_{x_{i} \in R_{m}(j,s)} y_{i} \\<br>x \in R_{m},m=1,2,…..<br>$$<br>继续对两个子区域调用上述步骤，将输入空间划分为M个区域R1,R2,…,Rm，生成决策树。<br>$$<br>f(x)=\sum_{m=1}^{M}\hat{c}_{m}I(x\in R_{m})<br>$$<br>当输入空间划分确定时，可以用 <strong>平方误差</strong> 来表示回归树对于训练数据的预测方法，用 <strong>平方误差</strong> 最小的准则求解每个单元上的最优输出值。<br>$$<br>\sum_{x_{i} \in R_{m}}(y_{i}-f(x_{i}))^2<br>$$</p>
+<p><strong><em>实例计算</em></strong><br>考虑下图所示的连续性变量，根据给定的数据点，考虑1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5切分点。对各切分点依次求出$R_1$,$R_2$,$c_1$,$c_2$及m(s)。<br><img src="/imgs/决策树及正则剪枝/3.jpg" alt="CART树例子表格01"><br>例如当切分点s=1.5时，得到R1={1},R2={2,3,4,5,6,7,8,9,10}，其中$c_1$,$c_2$,m(s)计算如下所示：<br><img src="/imgs/决策树及正则剪枝/4.jpg" alt="CART树例子表格02"><br>依次改变(j,s)对，可以得到s及m(s)的计算结果，如下表所示。<br><img src="/imgs/决策树及正则剪枝/5.jpg" alt="CART树例子表格03"><br>当x=6.5时，此时R1={1,2,3,4,5,6},R2={7,8,9,10},c1=6.24,c2=8.9。回归树$T_{1}(x)$为<br><img src="/imgs/决策树及正则剪枝/6.jpg" alt="CART树例子表格04"><br>然后我们利用$f_{1}(x)$拟合训练数据的残差，如下表所示<br><img src="/imgs/决策树及正则剪枝/7.jpg" alt="CART树例子表格05"><br>用f1(x)拟合训练数据得到平方误差<br><img src="/imgs/决策树及正则剪枝/8.jpg" alt="CART树例子表格06"><br>第二步求$T_{2}(x)$与求$T_{1}(x)$方法相同，只是拟合的数据是上表的残差。可以得到<br><img src="/imgs/决策树及正则剪枝/9.jpg" alt="CART树例子表格07"><br>用f2(x)拟合训练数据的平方误差<br><img src="/imgs/决策树及正则剪枝/10.jpg" alt="CART树例子表格08"><br>继续求得$T_3(x)、T_4(x)、T_5(x)、T_6(x)$，如下所示<br><img src="/imgs/决策树及正则剪枝/11.jpg" alt="CART树例子表格09"><br>用$f_6(x)$拟合训练数据的平方损失误差如下所示，假设此时已经满足误差要求，那么$f(x)=f_6(x)$便是所求的回归树。<br><img src="/imgs/决策树及正则剪枝/12.jpg" alt="CART树例子表格10"></p>
+<h2 id="4-2、分类树"><a href="#4-2、分类树" class="headerlink" title="4.2、分类树"></a>4.2、分类树</h2><p>CART分类树预测分类离散型数据，采用基尼指数选择最优特征，同时决定该特征的最优二值切分点。分类过程中，假设有K个类，样本点属于第k个类的概率为$p_k$，则概率分布的基尼指数定义为:<br><img src="/imgs/决策树及正则剪枝/13.jpg" alt="CART树例子表格11"><br>根据基尼指数定义，可以得到样本集合D的基尼指数，其中$C_k$表示数据集D中属于第k类的样本子集。<br><img src="/imgs/决策树及正则剪枝/14.jpg" alt="CART树例子表格12"><br>如果数据集D根据特征A在某一取值a上进行分割，得到$D_1,D_2$两部分后，那么在特征A下集合D的基尼系数如下所示。其中基尼系数Gini(D)表示集合D的不确定性，基尼系数Gini(D,A)表示A=a分割后集合D的不确定性。基尼指数越大，样本集合的不确定性越大。<br><img src="/imgs/决策树及正则剪枝/15.jpg" alt="CART树例子表格13"><br>对于属性A，分别计算任意属性值将数据集划分为两部分之后的Gain_Gini，选取其中的最小值，作为属性A得到的最优二分方案。然后对于训练集S，计算所有属性的最优二分方案，选取其中的最小值，作为样本及S的最优二分方案。<br><img src="/imgs/决策树及正则剪枝/16.jpg" alt="CART树例子表格14"></p>
+<p><strong><em>其中算法的停止条件有：</em></strong></p>
+<ul>
+<li>1、节点中的样本个数小于预定阈值，</li>
+<li>2、样本集的Gini系数小于预定阈值（此时样本基本属于同一类），</li>
+<li>3、或没有更多特征。</li>
+</ul>
+<p><strong><em>实例计算</em></strong><br><img src="/imgs/决策树及正则剪枝/17.jpg" alt="CART树例子表格15"><br>针对上述离散型数据，按照体温为恒温和非恒温进行划分。其中恒温时包括哺乳类5个、鸟类2个，非恒温时包括爬行类3个、鱼类3个、两栖类2个，如下所示我们计算$D_1,D_2$的基尼指数。<br><img src="/imgs/决策树及正则剪枝/18.jpg" alt="CART树例子表格16"><br>然后计算得到特征体温下数据集的Gini指数，最后我们选择Gain_Gini最小的特征和相应的划分。<br><img src="/imgs/决策树及正则剪枝/19.jpg" alt="CART树例子表格17"></p>
+<h2 id="4-3、分类树-VS-回归树"><a href="#4-3、分类树-VS-回归树" class="headerlink" title="4.3、分类树 VS 回归树"></a>4.3、分类树 VS 回归树</h2><p>提到决策树算法，很多想到的就是上面提到的ID3、C4.5、CART分类决策树。其实决策树分为分类树和回归树，前者用于分类，如晴天/阴天/雨天、用户性别、邮件是否是垃圾邮件，后者用于预测实数值，如明天的温度、用户的年龄等。</p>
+<p>作为对比，先说分类树，我们知道ID3、C4.5分类树在每次分枝时，是穷举每一个特征属性的每一个阈值，找到使得按照feature&lt;=阈值，和feature&gt;阈值分成的两个分枝的熵最大的feature和阈值。按照该标准分枝得到两个新节点，用同样方法继续分枝直到所有人都被分入性别唯一的叶子节点，或达到预设的终止条件，若最终叶子节点中的性别不唯一，则以多数人的性别作为该叶子节点的性别。</p>
+<p>回归树总体流程也是类似，不过在每个节点（不一定是叶子节点）都会得一个预测值，以年龄为例，该预测值等于属于这个节点的所有人年龄的平均值。分枝时穷举每一个feature的每个阈值找最好的分割点，但衡量最好的标准不再是最大熵，而是最小化均方差–即（每个人的年龄-预测年龄）^2 的总和 / N，或者说是每个人的预测误差平方和 除以 N。这很好理解，被预测出错的人数越多，错的越离谱，均方差就越大，通过最小化均方差能够找到最靠谱的分枝依据。分枝直到每个叶子节点上人的年龄都唯一（这太难了）或者达到预设的终止条件（如叶子个数上限），若最终叶子节点上人的年龄不唯一，则以该节点上所有人的平均年龄做为该叶子节点的预测年龄。</p>
+<h1 id="5、正则和剪枝"><a href="#5、正则和剪枝" class="headerlink" title="5、正则和剪枝"></a>5、正则和剪枝</h1><p>树剪枝和CART剪枝<br>决策树很容易发生过拟合，可以改善的方法有：</p>
+<ul>
+<li>1、通过阈值控制终止条件，避免树形结构分支过细。</li>
+<li>2、通过对已经形成的决策树进行剪枝来避免过拟合。</li>
+<li>3、基于Bootstrap的思想建立随机森林。</li>
+</ul>
+<p>剪枝(pruning)是解决决策树过拟合的主要手段，通过剪枝可以大大提升决策树的泛化能力。通常，剪枝处理可分为：预剪枝，后剪枝。</p>
+<ul>
+<li>预剪枝：通过启发式方法，在生成决策树过程中对划分进行预测，若当前结点的划分不能对决策树泛化性能提升，则停止划分，并将其标记为叶节点</li>
+<li>后剪枝：对已有的决策树，自底向上的对非叶结点进行考察，若该结点对应的子树替换为叶结点能提升决策树的泛化能力，则将改子树替换为叶结点</li>
+</ul>
+<h1 id="6、决策树算法总结"><a href="#6、决策树算法总结" class="headerlink" title="6、决策树算法总结"></a>6、决策树算法总结</h1><p>上面我们对CART算法做了一个详细的介绍，CART算法相比C4.5算法的分类方法，采用了简化的二叉树模型，同时特征选择采用了近似的基尼系数来简化计算。当然CART树最大的好处是还可以做回归模型，这个C4.5没有。下表给出了ID3，C4.5和CART的一个比较总结。希望可以帮助大家理解。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">算法</th>
+<th style="text-align:center">支持模型</th>
+<th style="text-align:center">树结构</th>
+<th style="text-align:center">特征选择</th>
+<th style="text-align:center">连续值处理</th>
+<th style="text-align:center">缺失值处理</th>
+<th style="text-align:center">剪枝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ID3</td>
+<td style="text-align:center">分类</td>
+<td style="text-align:center">多叉树</td>
+<td style="text-align:center">信息增益</td>
+<td style="text-align:center">不支持</td>
+<td style="text-align:center">不支持</td>
+<td style="text-align:center">不支持</td>
+</tr>
+<tr>
+<td style="text-align:center">C4.5</td>
+<td style="text-align:center">分类</td>
+<td style="text-align:center">多叉树</td>
+<td style="text-align:center">信息增益比</td>
+<td style="text-align:center">支持</td>
+<td style="text-align:center">支持</td>
+<td style="text-align:center">支持</td>
+</tr>
+<tr>
+<td style="text-align:center">CART</td>
+<td style="text-align:center">分类，回归</td>
+<td style="text-align:center">二叉树</td>
+<td style="text-align:center">基尼系数，均方差</td>
+<td style="text-align:center">支持</td>
+<td style="text-align:center">支持</td>
+<td style="text-align:center">支持</td>
+</tr>
+</tbody>
+</table>
+<p>看起来CART算法高大上，那么CART算法还有没有什么缺点呢？有！主要的缺点我认为如下：</p>
+<ul>
+<li>1）应该大家有注意到，无论是ID3, C4.5还是CART,在做特征选择的时候都是选择最优的一个特征来做分类决策，但是大多数，分类决策不应该是由某一个特征决定的，而是应该由一组特征决定的。这样决策得到的决策树更加准确。这个决策树叫做多变量决策树(multi-variate decision tree)。在选择最优特征的时候，多变量决策树不是选择某一个最优特征，而是选择最优的一个特征线性组合来做决策。这个算法的代表是OC1，这里不多介绍。</li>
+<li>2）如果样本发生一点点的改动，就会导致树结构的剧烈改变。这个可以通过集成学习里面的随机森林之类的方法解决。　　　</li>
+</ul>
+<h1 id="7、参考"><a href="#7、参考" class="headerlink" title="7、参考"></a>7、参考</h1><ul>
+<li>《统计机器学习方法,李航》</li>
+<li><a href="https://www.cnblogs.com/pinard/p/6053344.html" target="_blank" rel="noopener">决策树算法原理(下)</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/36108972" target="_blank" rel="noopener">机器学习之分类与回归树(CART)</a></li>
+<li><a href="https://www.jianshu.com/p/b90a9ce05b28" target="_blank" rel="noopener">CART 分类与回归树</a></li>
+<li><a href="https://blog.csdn.net/lzzdflg/article/details/78649925" target="_blank" rel="noopener">决策树CART与ID3,C4.5联系与区别</a></li>
+<li><a href="https://blog.csdn.net/u010089444/article/details/53241218" target="_blank" rel="noopener">决策树（ID3、C4.5、CART）</a></li>
+<li><a href="https://www.jianshu.com/p/38aa0daf6841" target="_blank" rel="noopener">决策树(ID3 &amp; C4.5 &amp; CART)</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/决策树/" rel="tag"><i class="fa fa-tag"></i> 决策树</a>
+          
+            <a href="/tags/CART算法/" rel="tag"><i class="fa fa-tag"></i> CART算法</a>
+          
+            <a href="/tags/ID3/" rel="tag"><i class="fa fa-tag"></i> ID3</a>
+          
+            <a href="/tags/C4-5/" rel="tag"><i class="fa fa-tag"></i> C4.5</a>
+          
+            <a href="/tags/剪枝/" rel="tag"><i class="fa fa-tag"></i> 剪枝</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/NLP/通俗理解之条件随机场-CRF/" rel="next" title="通俗理解之条件随机场(CRF)">
+                <i class="fa fa-chevron-left"></i> 通俗理解之条件随机场(CRF)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/工程工具/spark基础笔记/" rel="prev" title="spark基础笔记">
+                spark基础笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.png"
+                alt="马野" />
+            
+              <p class="site-author-name" itemprop="name">马野</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="xiachiucas@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-E-Mail"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                网站链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.arxiv-sanity.com/top" title="Arixv热搜版" target="_blank">Arixv热搜版</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hankcs.com/" title="码农场" target="_blank">码农场</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://paper.yanxishe.com/" title="AI研习社" target="_blank">AI研习社</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xpqiu" title="Fudan NLP" target="_blank">Fudan NLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/thunlp" title="THUNLP" target="_blank">THUNLP</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.bookstack.cn/read/huaxiaozhuan-ai/README.md" title="《AI算法工程师手册》" target="_blank">《AI算法工程师手册》</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、介绍"><span class="nav-text">1、介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、ID3算法"><span class="nav-text">2、ID3算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1、信息熵"><span class="nav-text">2.1、信息熵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2、信息增益"><span class="nav-text">2.2、信息增益</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3、算法流程和思想"><span class="nav-text">2.3、算法流程和思想</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、C4-5算法"><span class="nav-text">3、C4.5算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1、信息增益比"><span class="nav-text">3.1、信息增益比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2、算法流程和思想"><span class="nav-text">3.2、算法流程和思想</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、CART算法"><span class="nav-text">4、CART算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1、回归树"><span class="nav-text">4.1、回归树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2、分类树"><span class="nav-text">4.2、分类树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3、分类树-VS-回归树"><span class="nav-text">4.3、分类树 VS 回归树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、正则和剪枝"><span class="nav-text">5、正则和剪枝</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6、决策树算法总结"><span class="nav-text">6、决策树算法总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7、参考"><span class="nav-text">7、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">马野</span>
+
+  
+</div>
+
+
+<div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+<div>
+<p >Hosted by <a target="_blank" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'TjWnQkO6exbqDEXcjR0WpplS-gzGzoHsz',
+        appKey: 'NBIbiOSvsE8jCwyazUpjhoOn',
+        placeholder: '欢迎大家来评论',
+        avatar:'mp',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
